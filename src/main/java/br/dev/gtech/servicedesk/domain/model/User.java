@@ -56,7 +56,7 @@ public class User {
         return role;
     }
 
-    public Boolean getActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
