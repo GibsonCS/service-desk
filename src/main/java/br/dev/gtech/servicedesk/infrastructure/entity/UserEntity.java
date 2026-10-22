@@ -45,7 +45,8 @@ public class UserEntity {
     }
 
     public UserEntity(UUID id, String name, String email, String hashPassword, Role role,
-                      Boolean isActive, LocalDate updatedAt, LocalDate createdAt) {
+                      Boolean isActive, LocalDate updatedAt, LocalDate createdAt
+    ) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -55,5 +56,4 @@ public class UserEntity {
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
     }
-
 }
