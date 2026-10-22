@@ -3,6 +3,7 @@ package br.dev.gtech.servicedesk.infrastructure.adapter;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.User;
@@ -14,6 +15,19 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryAdapter implements UserRepositoryPort {
+    @Override
+    public Optional<User> findById(UUID userId) {
+        Optional<UserEntity> userEntity = userRepository.findById(userId);
+
+        if(userEntity.isEmpty()){
+            return Optional.empty();
+        }
+
+        User user = UserMapper.toDomain(userEntity.get());
+
+        return Optional.of(user);
+    }
+
     private final UserRepository userRepository;
 
     @Override
