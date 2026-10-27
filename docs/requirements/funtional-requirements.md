@@ -28,7 +28,7 @@ O sistema deverá permitir a consulta dos dados de um usuário, respeitando as p
 
 **RF03 — Atualizar usuário**
 
-O sistema deverá permitir a atualização dos dados cadastrais de um usuário autorizado.
+O sistema deverá permitir a atualização dos dados cadastrais de um usuário autorizado como nome, email e senha.
 
 **RF04 — Desativar usuário**
 
