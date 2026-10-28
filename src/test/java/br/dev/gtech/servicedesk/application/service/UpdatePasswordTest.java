@@ -1,8 +1,8 @@
 package br.dev.gtech.servicedesk.application.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -10,10 +10,13 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.dev.gtech.servicedesk.application.port.out.PasswordEncoderPort;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.enums.Role;
+import br.dev.gtech.servicedesk.infrastructure.security.PasswordEncoderAdapter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,17 +33,31 @@ class UpdatePasswordTest {
     @Mock
     UserRepositoryPort userRepositoryPort;
 
-    @InjectMocks
+    PasswordEncoderPort passwordEncoderPort;
+
     UpdatePassword updatePassword;
 
+    @BeforeEach
+    void setUp() {
+        this.passwordEncoderPort = new PasswordEncoderAdapter();
+        this.updatePassword = new UpdatePassword(userRepositoryPort, passwordEncoderPort);
+    }
+
     @Test
-    void shouldExceptionIfUserNotFount(){
+    void shouldExceptionIfUserNotFount() {
         when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(RuntimeException.class,() ->
-                updatePassword.update(VALID_USERID, VALID_PASSWORD));
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                updatePassword.update(VALID_USERID, VALID_PASSWORD, VALID_PASSWORD));
 
         assertEquals("Usuário não encontrado", exception.getMessage());
     }
 
+    @Test
+    void shouldThrowExceptionIfPasswordNotEquals() {
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                updatePassword.update(VALID_USERID, "asd", VALID_PASSWORD));
+
+        assertEquals("As senhas não conferem", exception.getMessage());
+    }
 }
