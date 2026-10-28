@@ -14,9 +14,11 @@ import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.port.in.CreateUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.GetUserUseCase;
+import br.dev.gtech.servicedesk.application.port.in.UpdateEmailUseCase;
 import br.dev.gtech.servicedesk.application.port.in.UpdateNameUseCase;
 import br.dev.gtech.servicedesk.presentation.dto.CreateUserDTO;
 import br.dev.gtech.servicedesk.presentation.dto.GetUserDTO;
+import br.dev.gtech.servicedesk.presentation.dto.UpdateEmailDTO;
 import br.dev.gtech.servicedesk.presentation.dto.UpdateNameDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class UserController {
     private final CreateUserUseCase createUserService;
     private final GetUserUseCase getUserUseCase;
     private final UpdateNameUseCase updateNameUseCase;
+    private final UpdateEmailUseCase updateEmailUseCase;
 
     @PostMapping("/users")
     public ResponseEntity<UUID> handleCreateUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
@@ -53,5 +56,15 @@ public class UserController {
         updateNameUseCase.update(id, updateNameDTO.name());
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/users/email/{id}")
+    public ResponseEntity<Void> handleUpdateEmail(
+            @Valid @PathVariable UUID id,
+            @RequestBody UpdateEmailDTO updateEmailDTO
+    ) {
+        updateEmailUseCase.update(id, updateEmailDTO.email());
+
+        return ResponseEntity.noContent().build();
     }
 }

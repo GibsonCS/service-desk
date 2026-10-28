@@ -15,11 +15,13 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryAdapter implements UserRepositoryPort {
+    private final UserRepository userRepository;
+
     @Override
     public Optional<User> findById(UUID userId) {
         Optional<UserEntity> userEntity = userRepository.findById(userId);
 
-        if(userEntity.isEmpty()){
+        if (userEntity.isEmpty()) {
             return Optional.empty();
         }
 
@@ -28,13 +30,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         return Optional.of(user);
     }
 
-    private final UserRepository userRepository;
-
     @Override
     public Optional<User> findByEmail(String email) {
         Optional<UserEntity> userEntity = userRepository.findByEmail(email);
 
-        if(userEntity.isEmpty()) {
+        if (userEntity.isEmpty()) {
             return Optional.empty();
         }
 
