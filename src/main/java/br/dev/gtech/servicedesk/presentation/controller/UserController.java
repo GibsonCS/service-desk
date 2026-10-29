@@ -16,10 +16,12 @@ import br.dev.gtech.servicedesk.application.port.in.CreateUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.GetUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.UpdateEmailUseCase;
 import br.dev.gtech.servicedesk.application.port.in.UpdateNameUseCase;
+import br.dev.gtech.servicedesk.application.port.in.UpdatePasswordUseCase;
 import br.dev.gtech.servicedesk.presentation.dto.CreateUserDTO;
 import br.dev.gtech.servicedesk.presentation.dto.GetUserDTO;
 import br.dev.gtech.servicedesk.presentation.dto.UpdateEmailDTO;
 import br.dev.gtech.servicedesk.presentation.dto.UpdateNameDTO;
+import br.dev.gtech.servicedesk.presentation.dto.UpdatePasswordDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +33,7 @@ public class UserController {
     private final GetUserUseCase getUserUseCase;
     private final UpdateNameUseCase updateNameUseCase;
     private final UpdateEmailUseCase updateEmailUseCase;
+    private final UpdatePasswordUseCase updatePasswordUseCase;
 
     @PostMapping("/users")
     public ResponseEntity<UUID> handleCreateUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
@@ -64,6 +67,18 @@ public class UserController {
             @RequestBody UpdateEmailDTO updateEmailDTO
     ) {
         updateEmailUseCase.update(id, updateEmailDTO.email());
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/users/password/{id}")
+    public ResponseEntity<Void> handleUpdatePassword(@PathVariable UUID id,
+                                                     @Valid @RequestBody UpdatePasswordDTO updatePasswordDTO
+    ) {
+        updatePasswordUseCase.update(id,
+                updatePasswordDTO.password(),
+                updatePasswordDTO.confirmPassword()
+        );
 
         return ResponseEntity.noContent().build();
     }
