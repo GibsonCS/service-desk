@@ -21,8 +21,6 @@ public record GetUserDTO(
         Boolean isActive,
         LocalDate updatedAt,
         LocalDate createdAt
-
-
 ) {
     public static GetUserDTO toDTO(User user) {
         return new GetUserDTO(

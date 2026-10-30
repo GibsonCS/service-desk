@@ -54,7 +54,7 @@ public class UserController {
     @PatchMapping("/users/name/{id}")
     public ResponseEntity<HttpStatus> handleUpdateName(
             @Valid @PathVariable UUID id,
-            @RequestBody UpdateNameDTO updateNameDTO
+            @Valid @RequestBody UpdateNameDTO updateNameDTO
     ) {
         updateNameUseCase.update(id, updateNameDTO.name());
 
@@ -64,7 +64,7 @@ public class UserController {
     @PatchMapping("/users/email/{id}")
     public ResponseEntity<Void> handleUpdateEmail(
             @Valid @PathVariable UUID id,
-            @RequestBody UpdateEmailDTO updateEmailDTO
+            @Valid @RequestBody UpdateEmailDTO updateEmailDTO
     ) {
         updateEmailUseCase.update(id, updateEmailDTO.email());
 

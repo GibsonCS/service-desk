@@ -1,7 +1,9 @@
 package br.dev.gtech.servicedesk.application.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateNameTest {
@@ -37,13 +40,21 @@ class UpdateNameTest {
     UpdateName updateName;
 
     @Test
-    void shouldReturnNoContentStausCode() {
+    void shouldUpdateName() {
         User user = User.create(VALID_USERID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_ROLE,
                 VALID_IS_ACTIVE, VALID_UPDATED_AT, VALID_CREATED_AT);
 
         when(userRepository.findById(VALID_USERID)).thenReturn(Optional.of(user));
 
         updateName.update(VALID_USERID, "NewName");
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+        verify(userRepository).save(captor.capture());
+
+        User savedUser = captor.getValue();
+
+        assertEquals("NewName", savedUser.getName());
 
         verify(userRepository, times(1)).save(any());
     }

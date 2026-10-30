@@ -3,6 +3,7 @@ package br.dev.gtech.servicedesk.application.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -61,7 +62,15 @@ class UpdateEmailTest {
     void shouldUpdateUserEmail() {
         when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
 
-        updateEmail.update(VALID_USERID, VALID_EMAIL);
+        updateEmail.update(VALID_USERID, "gibson@gmail.com");
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+        verify(userRepositoryPort).save(captor.capture());
+
+        User savedUser = captor.getValue();
+
+        assertEquals("gibson@gmail.com", savedUser.getEmail());
 
         verify(userRepositoryPort, times(1)).save(any(User.class));
     }
