@@ -3,6 +3,7 @@ package br.dev.gtech.servicedesk.application.service;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import br.dev.gtech.servicedesk.application.exception.UserAlreadyExists;
 import br.dev.gtech.servicedesk.application.port.in.CreateUserUseCase;
 import br.dev.gtech.servicedesk.application.port.out.PasswordEncoderPort;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
@@ -24,7 +25,7 @@ public class CreateUserService implements CreateUserUseCase {
     @Override
     public UUID create(String name, String email, String password) {
         if (userRepositoryPort.findByEmail(email).isPresent()) {
-            throw new RuntimeException("Usuário já existe");
+            throw new UserAlreadyExists("Usuário já existe");
         }
 
         User user = User.create(
