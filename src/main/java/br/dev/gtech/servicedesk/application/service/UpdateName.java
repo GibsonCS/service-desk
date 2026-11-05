@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.in.UpdateNameUseCase;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.User;
@@ -20,7 +21,7 @@ public class UpdateName implements UpdateNameUseCase {
         Optional<User> foundedUser = userRepositoryPort.findById(userId);
 
         if (foundedUser.isEmpty()) {
-            throw new RuntimeException("Usuário não encontrado");
+            throw new UserNotFoundException("Usuário não encontrado");
         }
 
         User updatedUser = User.create(

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.in.UpdatePasswordUseCase;
 import br.dev.gtech.servicedesk.application.port.out.PasswordEncoderPort;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
@@ -29,7 +30,7 @@ public class UpdatePassword implements UpdatePasswordUseCase {
         Optional<User> foundedUser = userRepository.findById(userId);
 
         if (foundedUser.isEmpty()) {
-            throw new RuntimeException("Usuário não encontrado");
+            throw new UserNotFoundException("Usuário não encontrado");
         }
 
         User updatedUser = User.create(
