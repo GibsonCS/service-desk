@@ -1,6 +1,5 @@
 package br.dev.gtech.servicedesk.application.service;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,16 +23,7 @@ public class UpdateName implements UpdateNameUseCase {
             throw new UserNotFoundException("Usuário não encontrado");
         }
 
-        User updatedUser = User.create(
-                foundedUser.get().getId(),
-                name,
-                foundedUser.get().getEmail(),
-                foundedUser.get().getHashPassword(),
-                foundedUser.get().getRole(),
-                foundedUser.get().getIsActive(),
-                LocalDate.now(),
-                foundedUser.get().getCreatedAt()
-        );
+        User updatedUser = foundedUser.get().updateName(name);
 
         userRepositoryPort.save(updatedUser);
     }

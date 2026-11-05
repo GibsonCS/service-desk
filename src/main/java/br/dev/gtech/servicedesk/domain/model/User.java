@@ -36,6 +36,17 @@ public class User {
         return new User(id, name, email, hashPassword, role, isActive, updatedAt, createdAt);
     }
 
+    public User updateName(String name) {
+        return new User(this.id,
+                name,
+                this.email,
+                this.hashPassword,
+                this.role,
+                this.isActive,
+                LocalDate.now(),
+                this.createdAt);
+    }
+
     public UUID getId() {
         return id;
     }
