@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.dev.gtech.servicedesk.application.exception.PasswordException;
 import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.in.UpdatePasswordUseCase;
 import br.dev.gtech.servicedesk.application.port.out.PasswordEncoderPort;
@@ -24,7 +25,7 @@ public class UpdatePassword implements UpdatePasswordUseCase {
         String encodedPassword = passwordEnconder.encode(confirmPassword);
 
         if (!passwordEnconder.matches(password, encodedPassword)) {
-            throw new RuntimeException("As senhas não conferem");
+            throw new PasswordException("As senhas não conferem");
         }
 
         Optional<User> foundedUser = userRepository.findById(userId);
