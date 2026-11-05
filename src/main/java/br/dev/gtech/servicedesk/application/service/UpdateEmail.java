@@ -1,6 +1,5 @@
 package br.dev.gtech.servicedesk.application.service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
@@ -17,13 +16,10 @@ public class UpdateEmail implements UpdateEmailUseCase {
 
     @Override
     public void update(UUID userId, String email) {
-        Optional<User> foundedUser = userRepository.findById(userId);
+        User foundedUser = userRepository.findById(userId).orElseThrow(() ->
+                new UserNotFoundException("Usuário não encontrado"));
 
-        if (foundedUser.isEmpty()) {
-            throw new UserNotFoundException("Usuário não encontrado");
-        }
-
-        User updatedUser = foundedUser.get().withEmail(email);
+        User updatedUser = foundedUser.withEmail(email);
 
         userRepository.save(updatedUser);
     }

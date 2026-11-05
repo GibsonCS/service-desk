@@ -1,6 +1,5 @@
 package br.dev.gtech.servicedesk.application.service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
@@ -17,13 +16,10 @@ public class UpdateName implements UpdateNameUseCase {
 
     @Override
     public void update(UUID userId, String name) {
-        Optional<User> foundedUser = userRepositoryPort.findById(userId);
+        User foundedUser = userRepositoryPort.findById(userId).orElseThrow(() ->
+                new UserNotFoundException("Usuário não encontrado"));
 
-        if (foundedUser.isEmpty()) {
-            throw new UserNotFoundException("Usuário não encontrado");
-        }
-
-        User updatedUser = foundedUser.get().withName(name);
+        User updatedUser = foundedUser.withName(name);
 
         userRepositoryPort.save(updatedUser);
     }
