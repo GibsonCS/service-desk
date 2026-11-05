@@ -1,7 +1,5 @@
 package br.dev.gtech.servicedesk.application.service;
 
-import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.PasswordException;
@@ -22,27 +20,14 @@ public class UpdatePassword implements UpdatePasswordUseCase {
 
     @Override
     public void update(UUID userId, String password, String confirmPassword) {
-        String encodedPassword = passwordEnconder.encode(confirmPassword);
-
-        if (!passwordEnconder.matches(password, encodedPassword)) {
+        if (!password.equals(confirmPassword)) {
             throw new PasswordException("As senhas não conferem");
         }
 
-        Optional<User> foundedUser = userRepository.findById(userId);
+        User foundedUser = userRepository.findById(userId).orElseThrow(() ->
+                new UserNotFoundException("Usuário não encontrado"));
 
-        if (foundedUser.isEmpty()) {
-            throw new UserNotFoundException("Usuário não encontrado");
-        }
-
-        User updatedUser = User.create(
-                foundedUser.get().getId(),
-                foundedUser.get().getName(),
-                foundedUser.get().getEmail(),
-                encodedPassword, foundedUser.get().getRole(),
-                foundedUser.get().getIsActive(),
-                LocalDate.now(),
-                foundedUser.get().getCreatedAt()
-        );
+        User updatedUser = foundedUser.withPassword(passwordEnconder.encode(password));
 
         userRepository.save(updatedUser);
     }

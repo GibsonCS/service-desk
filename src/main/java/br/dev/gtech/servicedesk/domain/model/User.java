@@ -36,11 +36,33 @@ public class User {
         return new User(id, name, email, hashPassword, role, isActive, updatedAt, createdAt);
     }
 
-    public User updateName(String name) {
+    public User withName(String name) {
         return new User(this.id,
                 name,
                 this.email,
                 this.hashPassword,
+                this.role,
+                this.isActive,
+                LocalDate.now(),
+                this.createdAt);
+    }
+
+    public User withEmail(String email) {
+        return new User(this.id,
+                this.name,
+                email,
+                this.hashPassword,
+                this.role,
+                this.isActive,
+                LocalDate.now(),
+                this.createdAt);
+    }
+
+    public User withPassword(String hashPassword) {
+        return new User(this.id,
+                this.name,
+                this.email,
+                hashPassword,
                 this.role,
                 this.isActive,
                 LocalDate.now(),

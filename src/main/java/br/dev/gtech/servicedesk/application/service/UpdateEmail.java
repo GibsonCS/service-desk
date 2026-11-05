@@ -1,6 +1,5 @@
 package br.dev.gtech.servicedesk.application.service;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,10 +23,7 @@ public class UpdateEmail implements UpdateEmailUseCase {
             throw new UserNotFoundException("Usuário não encontrado");
         }
 
-        User updatedUser = User.create(foundedUser.get().getId(), foundedUser.get().getName(),
-                email, foundedUser.get().getHashPassword(), foundedUser.get().getRole(),
-                foundedUser.get().getIsActive(), LocalDate.now(), foundedUser.get().getCreatedAt()
-        );
+        User updatedUser = foundedUser.get().withEmail(email);
 
         userRepository.save(updatedUser);
     }

@@ -23,7 +23,7 @@ public class UpdateName implements UpdateNameUseCase {
             throw new UserNotFoundException("Usuário não encontrado");
         }
 
-        User updatedUser = foundedUser.get().updateName(name);
+        User updatedUser = foundedUser.get().withName(name);
 
         userRepositoryPort.save(updatedUser);
     }
