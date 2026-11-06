@@ -58,11 +58,11 @@ public class User {
                 this.createdAt);
     }
 
-    public User withPassword(String hashPassword) {
+    public User withPassword(String passwordHash) {
         return new User(this.id,
                 this.name,
                 this.email,
-                hashPassword,
+                passwordHash,
                 this.role,
                 this.isActive,
                 LocalDate.now(),
