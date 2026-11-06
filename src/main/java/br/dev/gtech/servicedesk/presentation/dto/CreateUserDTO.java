@@ -14,11 +14,10 @@ public record CreateUserDTO(
         @Size(min = 3, message = "Nome deve ter mais de três caracteres")
         String name,
 
-        @NotNull
+        @NotBlank(message = "O campo" + "e-mail" + "não pode ser vazio!")
         @Email
         String email,
 
-        @NotNull
         @NotBlank(message = "Password não deve está vazio")
         @Size(min = 6, max = 12, message = "Senha deve ter entre 6 e 12 digítos")
         String password

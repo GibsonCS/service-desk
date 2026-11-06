@@ -12,7 +12,6 @@ import jakarta.validation.constraints.NotNull;
 
 @Validated
 public record GetUserDTO(
-        @NotNull
         @NotBlank(message = "O id do usuário é obrigatório")
         UUID id,
         String name,
