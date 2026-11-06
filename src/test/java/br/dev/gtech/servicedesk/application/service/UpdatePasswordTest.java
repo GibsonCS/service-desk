@@ -3,6 +3,7 @@ package br.dev.gtech.servicedesk.application.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -13,10 +14,13 @@ import java.util.UUID;
 import br.dev.gtech.servicedesk.application.port.out.PasswordEncoderPort;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.enums.Role;
+import br.dev.gtech.servicedesk.domain.model.User;
 import br.dev.gtech.servicedesk.infrastructure.security.PasswordEncoderAdapter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,5 +63,23 @@ class UpdatePasswordTest {
                 updatePassword.update(VALID_USERID, "asd", VALID_PASSWORD));
 
         assertEquals("As senhas não conferem", exception.getMessage());
+    }
+
+    @Test
+    void shouldChangePassword() {
+        User user = User.create(VALID_USERID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_ROLE,
+                VALID_IS_ACTIVE, VALID_UPDATED_AT, VALID_CREATED_AT);
+
+        when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
+
+        updatePassword.update(VALID_USERID, VALID_PASSWORD, VALID_PASSWORD);
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+        verify(userRepositoryPort).save(captor.capture());
+
+        User savedUser = captor.getValue();
+
+        assertTrue(passwordEncoderPort.matches(VALID_PASSWORD, savedUser.getHashPassword()));
     }
 }
