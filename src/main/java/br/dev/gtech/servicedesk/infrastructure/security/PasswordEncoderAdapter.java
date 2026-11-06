@@ -16,7 +16,7 @@ public class PasswordEncoderAdapter implements PasswordEncoderPort {
     }
 
     @Override
-    public boolean matches(String password, String confirmPasswor) {
-        return passwordEncoder.matches(password,confirmPasswor);
+    public boolean matches(String rawPassword, String passwordHash) {
+        return passwordEncoder.matches(rawPassword, passwordHash);
     }
 }
