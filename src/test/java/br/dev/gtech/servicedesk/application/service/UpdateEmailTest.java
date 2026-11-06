@@ -71,6 +71,8 @@ class UpdateEmailTest {
         User savedUser = captor.getValue();
 
         assertEquals("gibson@gmail.com", savedUser.getEmail());
+        assertEquals(VALID_USERID, savedUser.getId());
+        assertEquals(VALID_NAME, savedUser.getName());
 
         verify(userRepositoryPort, times(1)).save(any(User.class));
     }
