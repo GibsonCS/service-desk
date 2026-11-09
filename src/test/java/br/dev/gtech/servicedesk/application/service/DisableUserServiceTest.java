@@ -6,17 +6,31 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
+import br.dev.gtech.servicedesk.application.exception.UserAlreadyDisable;
 import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
+import br.dev.gtech.servicedesk.domain.enums.Role;
+import br.dev.gtech.servicedesk.domain.model.User;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DisableUserServiceTest {
-
-    UUID VALID_ID = UUID.randomUUID();
+    private final UUID VALID_USERID = UUID.fromString("0e642fac-ae9f-4e47-9c75-1b2f6a6e2058");
+    private final String VALID_NAME = "Gibson";
+    private final String VALID_EMAIL = "gibson@example";
+    private final String VALID_PASSWORD = "123456";
+    private final Role VALID_ROLE = Role.USER;
+    private final Boolean VALID_IS_ACTIVE = true;
+    private final LocalDate VALID_UPDATED_AT = LocalDate.now();
+    private final LocalDate VALID_CREATED_AT = LocalDate.now();
 
     @Mock
     UserRepositoryPort userRepositoryPort;
@@ -26,9 +40,22 @@ class DisableUserServiceTest {
 
     @Test
     void shouldNotDisableUserIfNotExists() {
+        when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.empty());
+
         assertThrows(UserNotFoundException.class, () ->
-                disableUserService.disable(VALID_ID), "Usuário não encontrado");
+                disableUserService.disable(VALID_USERID), "Usuário não encontrado");
+
+        verify(userRepositoryPort, times(1)).findById(VALID_USERID);
     }
 
+    @Test
+    void shouldNotDisableIfUserAlreadyDisable() {
+        User user = User.create(VALID_USERID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_ROLE,
+                false, VALID_UPDATED_AT, VALID_CREATED_AT);
 
+        when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
+
+        assertThrows(UserAlreadyDisable.class, () ->
+                disableUserService.disable(VALID_USERID), "Usuário já está inativo");
+    }
 }

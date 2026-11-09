@@ -12,7 +12,7 @@ public class User {
     private final String email;
     private final String hashPassword;
     private final Role role;
-    private final Boolean isActive;
+    private final boolean isActive;
     private final LocalDate updatedAt;
     private final LocalDate createdAt;
 
