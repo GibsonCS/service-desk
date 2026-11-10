@@ -17,6 +17,7 @@ import br.dev.gtech.servicedesk.domain.model.Sector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +42,8 @@ class CreateSectorServiceTest {
 
         when(sectorRepositoryPort.findByName(VALID_NAME)).thenReturn(Optional.of(sector));
 
+        verify(sectorRepositoryPort, never()).save(sector);
+
         assertThrows(SectorAlreadyExists.class, () ->
                 createSectorService.create(VALID_NAME), "Setor já cadastrado");
     }
@@ -49,15 +52,16 @@ class CreateSectorServiceTest {
     void shouldCreateAnSector() {
         when(sectorRepositoryPort.findByName(VALID_NAME)).thenReturn(Optional.empty());
 
-        UUID sectorId = createSectorService.create(VALID_NAME);
-
         ArgumentCaptor<Sector> captor = ArgumentCaptor.forClass(Sector.class);
+
+        UUID sectorId = createSectorService.create(VALID_NAME);
 
         verify(sectorRepositoryPort).save(captor.capture());
 
         Sector savedSector = captor.getValue();
 
         assertEquals(VALID_NAME, savedSector.getName());
+
         assertEquals(sectorId, savedSector.getId());
     }
 }

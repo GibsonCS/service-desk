@@ -1,6 +1,6 @@
 package br.dev.gtech.servicedesk.infrastructure.entity;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.domain.enums.Role;
@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -27,6 +28,7 @@ public class UserEntity {
     private String email;
 
     @Column(name = "hash_password", nullable = false)
+    @ToString.Exclude
     private String hashPassword;
 
     @Enumerated(EnumType.STRING)
@@ -37,16 +39,16 @@ public class UserEntity {
     private Boolean isActive;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalDate updatedAt;
+    private Instant updatedAt;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDate createdAt;
+    private Instant createdAt;
 
     public UserEntity() {
     }
 
     public UserEntity(UUID id, String name, String email, String hashPassword, Role role,
-                      Boolean isActive, LocalDate updatedAt, LocalDate createdAt
+                      boolean isActive, Instant updatedAt, Instant createdAt
     ) {
         this.id = id;
         this.name = name;

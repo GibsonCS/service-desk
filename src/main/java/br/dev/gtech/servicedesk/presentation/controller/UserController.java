@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
     private final CreateUserUseCase createUserService;
     private final GetUserUseCase getUserUseCase;
@@ -37,35 +37,35 @@ public class UserController {
     private final UpdatePasswordUseCase updatePasswordUseCase;
     private final DisableUserUseCase disableUserUseCase;
 
-    @PostMapping("/users")
+    @PostMapping
     public ResponseEntity<UUID> handleCreateUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
         UUID createdUserId = createUserService.create(
                 createUserDTO.name(),
                 createUserDTO.email(),
                 createUserDTO.password());
 
-        return new ResponseEntity<>(createdUserId, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUserId);
     }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<GetUserDTO> handleGetUser(@Valid @PathVariable UUID id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<GetUserDTO> handleGetUser(@PathVariable UUID id) {
         GetUserDTO getUserDTO = GetUserDTO.toDTO(getUserUseCase.get(id));
-        return new ResponseEntity<>(getUserDTO, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(getUserDTO);
     }
 
-    @PatchMapping("/users/name/{id}")
-    public ResponseEntity<HttpStatus> handleUpdateName(
-            @Valid @PathVariable UUID id,
+    @PatchMapping("/name/{id}")
+    public ResponseEntity<Void> handleUpdateName(
+            @PathVariable UUID id,
             @Valid @RequestBody UpdateNameDTO updateNameDTO
     ) {
         updateNameUseCase.update(id, updateNameDTO.name());
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PatchMapping("/users/email/{id}")
+    @PatchMapping("/email/{id}")
     public ResponseEntity<Void> handleUpdateEmail(
-            @Valid @PathVariable UUID id,
+            @PathVariable UUID id,
             @Valid @RequestBody UpdateEmailDTO updateEmailDTO
     ) {
         updateEmailUseCase.update(id, updateEmailDTO.email());
@@ -73,7 +73,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/users/password/{id}")
+    @PatchMapping("/password/{id}")
     public ResponseEntity<Void> handleUpdatePassword(@PathVariable UUID id,
                                                      @Valid @RequestBody UpdatePasswordDTO updatePasswordDTO
     ) {
@@ -85,7 +85,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/users/{id}/disable")
+    @PatchMapping("/{id}/disable")
     public ResponseEntity<Void> handleDisableUser(@PathVariable UUID id) {
         disableUserUseCase.disable(id);
 

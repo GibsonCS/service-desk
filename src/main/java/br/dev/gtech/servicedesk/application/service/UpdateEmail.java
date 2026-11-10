@@ -30,7 +30,6 @@ public class UpdateEmail implements UpdateEmailUseCase {
             throw new EmailAlreadyExists("Email já cadastrado");
         });
 
-
         User updatedUser = foundedUser.withEmail(email);
 
         userRepository.save(updatedUser);

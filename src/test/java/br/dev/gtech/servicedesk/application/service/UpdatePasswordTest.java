@@ -7,7 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,8 +31,8 @@ class UpdatePasswordTest {
     private final String VALID_PASSWORD = "123456";
     private final Role VALID_ROLE = Role.USER;
     private final Boolean VALID_IS_ACTIVE = Boolean.TRUE;
-    private final LocalDate VALID_UPDATED_AT = LocalDate.now();
-    private final LocalDate VALID_CREATED_AT = LocalDate.now();
+    private final Instant VALID_UPDATED_AT = Instant.now();
+    private final Instant VALID_CREATED_AT = Instant.now();
 
     @Mock
     UserRepositoryPort userRepositoryPort;
@@ -81,5 +81,7 @@ class UpdatePasswordTest {
         User savedUser = captor.getValue();
 
         assertTrue(passwordEncoderPort.matches(VALID_PASSWORD, savedUser.getHashPassword()));
+        assertEquals(VALID_USERID, savedUser.getId());
+        assertEquals(VALID_EMAIL, savedUser.getEmail());
     }
 }

@@ -22,9 +22,12 @@ public class CreateSectorService implements CreateSectorUseCase {
             throw new SectorAlreadyExists("Setor já cadastrado");
         });
 
-        Sector createdSector = Sector.create(UUID.randomUUID(),
-                sectorName, true, Instant.now(), Instant.now());
+        Instant now = Instant.now();
 
-        return sectorRepository.save(createdSector);
+        Sector createdSector = Sector.create(UUID.randomUUID(),
+                sectorName, true, now, now);
+
+                sectorRepository.save(createdSector);
+        return createdSector.getId();
     }
 }

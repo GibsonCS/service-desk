@@ -1,6 +1,5 @@
 package br.dev.gtech.servicedesk.application.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -8,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,11 +15,11 @@ import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.enums.Role;
 import br.dev.gtech.servicedesk.domain.model.User;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateNameTest {
@@ -29,9 +28,9 @@ class UpdateNameTest {
     private final String VALID_EMAIL = "gibson@example";
     private final String VALID_PASSWORD = "123456";
     private final Role VALID_ROLE = Role.USER;
-    private final Boolean VALID_IS_ACTIVE = Boolean.TRUE;
-    private final LocalDate VALID_UPDATED_AT = LocalDate.now();
-    private final LocalDate VALID_CREATED_AT = LocalDate.now();
+    private final boolean VALID_IS_ACTIVE = true;
+    private final Instant VALID_UPDATED_AT = Instant.now();
+    private final Instant VALID_CREATED_AT = Instant.now();
 
     @Mock
     UserRepositoryPort userRepository;

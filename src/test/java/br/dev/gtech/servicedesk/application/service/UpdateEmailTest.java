@@ -8,10 +8,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.dev.gtech.servicedesk.application.exception.EmailAlreadyExists;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.enums.Role;
 import br.dev.gtech.servicedesk.domain.model.User;
@@ -30,9 +31,9 @@ class UpdateEmailTest {
     private final String VALID_EMAIL = "gibson@example";
     private final String VALID_PASSWORD = "123456";
     private final Role VALID_ROLE = Role.USER;
-    private final Boolean VALID_IS_ACTIVE = Boolean.TRUE;
-    private final LocalDate VALID_UPDATED_AT = LocalDate.now();
-    private final LocalDate VALID_CREATED_AT = LocalDate.now();
+    private final boolean VALID_IS_ACTIVE = true;
+    private final Instant VALID_UPDATED_AT = Instant.now();
+    private final Instant VALID_CREATED_AT = Instant.now();
 
 
     User user;
@@ -57,6 +58,17 @@ class UpdateEmailTest {
 
         assertEquals("Usuário não encontrado", exception.getMessage());
     }
+
+    @Test
+    void shouldNotUpdateEmailIfAlreadyExists() {
+        when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
+
+        RuntimeException exception = assertThrows(EmailAlreadyExists.class, () ->
+                updateEmail.update(VALID_USERID, VALID_EMAIL));
+
+        assertEquals("Você já utiliza este email! Favor insira um email diferente", exception.getMessage());
+    }
+
 
     @Test
     void shouldUpdateUserEmail() {

@@ -27,7 +27,7 @@ public class UpdatePassword implements UpdatePasswordUseCase {
         User foundedUser = userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException("Usuário não encontrado"));
 
-        User updatedUser = foundedUser.withPassword(passwordEnconder.encode(password));
+        User updatedUser = foundedUser.withPasswordHash(passwordEnconder.encode(password));
 
         userRepository.save(updatedUser);
     }

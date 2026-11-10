@@ -1,6 +1,6 @@
 package br.dev.gtech.servicedesk.application.service;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.UserAlreadyExists;
@@ -28,15 +28,16 @@ public class CreateUserService implements CreateUserUseCase {
             throw new UserAlreadyExists("Usuário já existe");
         }
 
+        Instant now = Instant.now();
         User user = User.create(
                 UUID.randomUUID(),
                 name,
-                email,
+                email.toLowerCase(),
                 passwordEncoder.encode(password),
                 Role.USER,
                 true,
-                LocalDate.now(),
-                LocalDate.now()
+                now,
+                now
         );
 
         userRepositoryPort.save(user);
