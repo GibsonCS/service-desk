@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import br.dev.gtech.servicedesk.application.port.in.CreateUserUseCase;
+import br.dev.gtech.servicedesk.application.port.in.DisableUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.GetUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.UpdateEmailUseCase;
 import br.dev.gtech.servicedesk.application.port.in.UpdateNameUseCase;
@@ -11,6 +12,7 @@ import br.dev.gtech.servicedesk.application.port.in.UpdatePasswordUseCase;
 import br.dev.gtech.servicedesk.application.port.out.PasswordEncoderPort;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.application.service.CreateUserService;
+import br.dev.gtech.servicedesk.application.service.DisableUserService;
 import br.dev.gtech.servicedesk.application.service.GetUserService;
 import br.dev.gtech.servicedesk.application.service.UpdateEmail;
 import br.dev.gtech.servicedesk.application.service.UpdateName;
@@ -46,5 +48,10 @@ public class ServiceConfig {
     @Bean
     public UpdatePasswordUseCase updatePasswordUseCase() {
         return new UpdatePassword(userRepositoryPort, passwordEncoderPort);
+    }
+
+    @Bean
+    public DisableUserUseCase disableUserUseCase() {
+        return new DisableUserService(userRepositoryPort);
     }
 }

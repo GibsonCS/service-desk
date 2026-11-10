@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.port.in.CreateUserUseCase;
+import br.dev.gtech.servicedesk.application.port.in.DisableUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.GetUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.UpdateEmailUseCase;
 import br.dev.gtech.servicedesk.application.port.in.UpdateNameUseCase;
@@ -34,6 +35,7 @@ public class UserController {
     private final UpdateNameUseCase updateNameUseCase;
     private final UpdateEmailUseCase updateEmailUseCase;
     private final UpdatePasswordUseCase updatePasswordUseCase;
+    private final DisableUserUseCase disableUserUseCase;
 
     @PostMapping("/users")
     public ResponseEntity<UUID> handleCreateUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
@@ -79,6 +81,13 @@ public class UserController {
                 updatePasswordDTO.password(),
                 updatePasswordDTO.confirmPassword()
         );
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/users/{id}/disable")
+    public ResponseEntity<Void> handleDisableUser(@PathVariable UUID id) {
+        disableUserUseCase.disable(id);
 
         return ResponseEntity.noContent().build();
     }
