@@ -39,8 +39,8 @@ public class User {
     public User disabled() {
         return new User(
                 id,
-                hashPassword,
                 name,
+                email,
                 hashPassword,
                 role,
                 false,
