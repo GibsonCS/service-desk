@@ -36,6 +36,19 @@ public class User {
         return new User(id, name, email, hashPassword, role, isActive, updatedAt, createdAt);
     }
 
+    public User disabled() {
+        return new User(
+                id,
+                hashPassword,
+                name,
+                hashPassword,
+                role,
+                false,
+                LocalDate.now(),
+                createdAt
+        );
+    }
+
     public User withName(String name) {
         return new User(this.id,
                 name,

@@ -2,6 +2,7 @@ package br.dev.gtech.servicedesk.application.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,6 +17,7 @@ import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.enums.Role;
 import br.dev.gtech.servicedesk.domain.model.User;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -57,5 +59,24 @@ class DisableUserServiceTest {
 
         assertThrows(UserAlreadyDisable.class, () ->
                 disableUserService.disable(VALID_USERID), "Usuário já está inativo");
+    }
+
+    @Test
+    void shouldDisableUser() {
+        User user = User.create(VALID_USERID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_ROLE,
+                VALID_IS_ACTIVE, VALID_UPDATED_AT, VALID_CREATED_AT);
+
+        when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
+
+        disableUserService.disable(VALID_USERID);
+
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+
+        verify(userRepositoryPort).save(captor.capture());
+
+        User disabledUser = captor.getValue();
+
+
+        assertEquals(false, disabledUser.getIsActive());
     }
 }
