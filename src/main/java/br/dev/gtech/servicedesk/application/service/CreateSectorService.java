@@ -25,8 +25,6 @@ public class CreateSectorService implements CreateSectorUseCase {
         Sector createdSector = Sector.create(UUID.randomUUID(),
                 sectorName, true, Instant.now(), Instant.now());
 
-        sectorRepository.save(createdSector);
-
-        return createdSector.getId();
+        return sectorRepository.save(createdSector);
     }
 }
