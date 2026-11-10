@@ -42,10 +42,11 @@ class CreateSectorServiceTest {
 
         when(sectorRepositoryPort.findByName(VALID_NAME)).thenReturn(Optional.of(sector));
 
-        verify(sectorRepositoryPort, never()).save(sector);
 
         assertThrows(SectorAlreadyExists.class, () ->
                 createSectorService.create(VALID_NAME), "Setor já cadastrado");
+
+        verify(sectorRepositoryPort, never()).save(sector);
     }
 
     @Test

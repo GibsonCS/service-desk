@@ -11,11 +11,11 @@ import br.dev.gtech.servicedesk.domain.model.User;
 
 public class UpdatePassword implements UpdatePasswordUseCase {
     private final UserRepositoryPort userRepository;
-    private final PasswordEncoderPort passwordEnconder;
+    private final PasswordEncoderPort passwordEncoderPort;
 
-    public UpdatePassword(UserRepositoryPort userRepository, PasswordEncoderPort passwordEnconder) {
+    public UpdatePassword(UserRepositoryPort userRepository, PasswordEncoderPort passwordEncoderPort) {
         this.userRepository = userRepository;
-        this.passwordEnconder = passwordEnconder;
+        this.passwordEncoderPort = passwordEncoderPort;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class UpdatePassword implements UpdatePasswordUseCase {
         User foundedUser = userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException("Usuário não encontrado"));
 
-        User updatedUser = foundedUser.withPasswordHash(passwordEnconder.encode(password));
+        User updatedUser = foundedUser.withPasswordHash(passwordEncoderPort.encode(password));
 
         userRepository.save(updatedUser);
     }

@@ -17,20 +17,22 @@ public class UpdateEmail implements UpdateEmailUseCase {
 
     @Override
     public void update(UUID userId, String email) {
+        String normalizedEmail = email.trim().toLowerCase();
+
         User foundedUser = userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException("Usuário não encontrado"));
 
-        if (foundedUser.getEmail().equals(email)) {
+        if (foundedUser.getEmail().equals(normalizedEmail)) {
             throw new EmailAlreadyExists(
                     "Você já utiliza este email! Favor insira um email diferente"
             );
         }
 
-        userRepository.findByEmail(email).ifPresent(user -> {
+        userRepository.findByEmail(normalizedEmail).ifPresent(user -> {
             throw new EmailAlreadyExists("Email já cadastrado");
         });
 
-        User updatedUser = foundedUser.withEmail(email);
+        User updatedUser = foundedUser.withEmail(normalizedEmail);
 
         userRepository.save(updatedUser);
     }

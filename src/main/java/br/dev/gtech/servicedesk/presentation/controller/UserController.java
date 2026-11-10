@@ -50,7 +50,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<GetUserDTO> handleGetUser(@PathVariable UUID id) {
         GetUserDTO getUserDTO = GetUserDTO.toDTO(getUserUseCase.get(id));
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(getUserDTO);
+        return ResponseEntity.ok(getUserDTO);
     }
 
     @PatchMapping("/name/{id}")

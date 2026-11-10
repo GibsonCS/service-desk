@@ -24,7 +24,9 @@ public class CreateUserService implements CreateUserUseCase {
 
     @Override
     public UUID create(String name, String email, String password) {
-        if (userRepositoryPort.findByEmail(email).isPresent()) {
+        String normalizedEmail = email.trim().toLowerCase();
+
+        if (userRepositoryPort.findByEmail(normalizedEmail).isPresent()) {
             throw new UserAlreadyExists("Usuário já existe");
         }
 
@@ -32,7 +34,7 @@ public class CreateUserService implements CreateUserUseCase {
         User user = User.create(
                 UUID.randomUUID(),
                 name,
-                email.toLowerCase(),
+                normalizedEmail,
                 passwordEncoder.encode(password),
                 Role.USER,
                 true,
