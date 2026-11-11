@@ -54,7 +54,7 @@ O sistema deverá permitir o cadastro de setores responsáveis pelo recebimento 
 
 **RF09 — Consultar setores**
 
-O sistema deverá permitir a consulta dos setores cadastrados.
+O sistema deverá permitir listar setores cadastrados.
 
 **RF10 — Atualizar e desativar setor**
 
@@ -184,18 +184,6 @@ O sistema deverá disponibilizar o tempo médio de solução dos chamados conclu
 3. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento e as regras de horário comercial.
 4. Os requisitos poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
 
-## 5. Escopo da Primeira Versão
+___
 
-A primeira versão do sistema contemplará:
-
-- Cadastro e autenticação de usuários;
-- Gerenciamento de setores;
-- Abertura e acompanhamento de chamados;
-- Classificação por prioridade;
-- Atribuição de profissionais de suporte;
-- Controle de status e ciclo de vida dos chamados;
-- Comentários
-- Cálculo de tempo de solução em horário comercial;
-- Indicadores básicos de atendimento.
-
-Funcionalidades como notificações por e-mail, integrações externas e exportação avançada de relatórios poderão ser avaliadas para versões futuras.
+#### *v1.0.1*
