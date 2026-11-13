@@ -1,6 +1,5 @@
 package br.dev.gtech.servicedesk.application.port.out;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,4 +12,6 @@ public interface SectorRepositoryPort {
     List<Sector> findAll();
 
     UUID save(Sector sector);
+
+    Optional<Sector> findById(UUID sectorId);
 }

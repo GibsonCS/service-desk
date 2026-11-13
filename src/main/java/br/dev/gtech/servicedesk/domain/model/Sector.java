@@ -23,6 +23,10 @@ public class Sector {
         return new Sector(id, name, isActive, updatedAt, createdAt);
     }
 
+    public Sector disabled() {
+        return new Sector(id, name, false, Instant.now(), createdAt);
+    }
+
     public UUID getId() {
         return id;
     }
