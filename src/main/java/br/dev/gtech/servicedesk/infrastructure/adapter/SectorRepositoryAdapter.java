@@ -2,6 +2,7 @@ package br.dev.gtech.servicedesk.infrastructure.adapter;
 
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +29,11 @@ public class SectorRepositoryAdapter implements SectorRepositoryPort {
         Sector domainSector = SectorMapper.toDomain(foundedSectorEntity.get());
 
         return Optional.of(domainSector);
+    }
+
+    @Override
+    public HashSet<Sector> findAll() {
+        return HashSet.newHashSet(0);
     }
 
     @Override
