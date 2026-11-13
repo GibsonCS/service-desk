@@ -41,4 +41,18 @@ public class SectorRepositoryAdapter implements SectorRepositoryPort {
         sectorRepository.save(SectorMapper.toEntity(sector));
         return sector.getId();
     }
+
+    @Override
+    public Optional<Sector> findById(UUID sectorId) {
+
+        Optional<SectorEntity> foundedSectorEntity = sectorRepository.findById(sectorId);
+
+        if (foundedSectorEntity.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Sector sectorDomain = SectorMapper.toDomain(foundedSectorEntity.get());
+
+        return Optional.of(sectorDomain);
+    }
 }

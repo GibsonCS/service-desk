@@ -3,6 +3,8 @@ package br.dev.gtech.servicedesk.presentation.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.port.in.CreateSectorUseCase;
+import br.dev.gtech.servicedesk.application.port.in.DisableSectorUseCase;
 import br.dev.gtech.servicedesk.application.port.in.GetSectorsUseCase;
 import br.dev.gtech.servicedesk.domain.model.Sector;
 import br.dev.gtech.servicedesk.presentation.dto.CreateSectorDTO;
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class SectorController {
     private final CreateSectorUseCase createSectorUseCase;
     private final GetSectorsUseCase getSectorsUseCase;
+    private final DisableSectorUseCase disableSectorUseCase;
 
     @PostMapping
     public ResponseEntity<UUID> handleCreateSector(
@@ -42,5 +46,12 @@ public class SectorController {
         }
 
         return ResponseEntity.ok(sectors);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> handleDisableSector(@PathVariable UUID id) {
+        disableSectorUseCase.execute(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
