@@ -8,7 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.port.out.SectorRepositoryPort;
@@ -29,7 +31,7 @@ class GetSectorsServiceTest {
     Instant UPDATED_AT = Instant.now();
 
     Sector sector;
-    HashSet<Sector> sectors;
+    List<Sector> sectors;
 
     @Mock
     SectorRepositoryPort sectorRepositoryPort;
@@ -38,7 +40,7 @@ class GetSectorsServiceTest {
 
     @BeforeEach
     void setup() {
-        sectors = new HashSet<>();
+        sectors = new ArrayList<>();
         sector = Sector.create(VALID_ID, VALID_NAME, IS_ACTIVE, CREATED_AT, UPDATED_AT);
     }
 
@@ -46,7 +48,7 @@ class GetSectorsServiceTest {
     void shouldReturnAnEmptyList() {
         when(sectorRepositoryPort.findAll()).thenReturn(sectors);
 
-        HashSet<Sector> result = getSectorsService.get();
+        List<Sector> result = getSectorsService.get();
 
         assertTrue(result.isEmpty());
 
@@ -59,7 +61,7 @@ class GetSectorsServiceTest {
 
         when(sectorRepositoryPort.findAll()).thenReturn(sectors);
 
-        HashSet<Sector> result = getSectorsService.get();
+        List<Sector> result = getSectorsService.get();
 
         assertTrue(result.contains(sector));
 
