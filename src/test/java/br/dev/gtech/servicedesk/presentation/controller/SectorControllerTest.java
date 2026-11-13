@@ -14,11 +14,16 @@ import java.util.List;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.domain.model.Sector;
+import br.dev.gtech.servicedesk.infrastructure.entity.SectorEntity;
 import br.dev.gtech.servicedesk.infrastructure.mapper.SectorMapper;
 import br.dev.gtech.servicedesk.infrastructure.repository.SectorRepository;
+import jakarta.servlet.ServletException;
 import jakarta.transaction.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,5 +70,51 @@ class SectorControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 400 BAD REQUEST ao tentar desativar um setor inexistente")
+    void shouldNotDisableSectorNotFounded() throws Exception {
+        Exception e = assertThrows(ServletException.class, () ->
+                mockMvc.perform(patch("/api/sectors/".concat(UUID.randomUUID().toString()))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isBadRequest()));
+
+        assertEquals("Sector não encontrado", e.getCause().getMessage());
+    }
+
+    @Test
+    @DisplayName("Deve retornar 400 BAD REQUEST ao tentar desativar um setor já inativo")
+    void shouldNotDisableDisabledSector() throws Exception {
+        Instant now = Instant.now();
+
+        Sector sector = Sector.create(UUID.randomUUID(), "Financeiro",
+                false, now, now);
+
+        sectorRepository.save(SectorMapper.toEntity(sector));
+
+        Exception e = assertThrows(ServletException.class, () ->
+                mockMvc.perform(patch("/api/sectors/".concat(sector.getId().toString()))
+                                .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isBadRequest()));
+
+        assertEquals("Setor já inativo", e.getCause().getMessage());
+    }
+
+    @Test
+    @DisplayName("Deve retornar 204 OK ao desativar um setor")
+    void shouldDisableSector() throws Exception {
+        Instant now = Instant.now();
+
+        Sector sector = Sector.create(UUID.randomUUID(), "Financeiro",
+                true, now, now);
+
+        SectorEntity sectorEntity = SectorMapper.toEntity(sector);
+
+        sectorRepository.save(sectorEntity);
+
+        mockMvc.perform(patch("/api/sectors/".concat(sector.getId().toString()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }
