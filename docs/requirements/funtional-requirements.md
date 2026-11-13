@@ -58,7 +58,7 @@ O sistema deverá permitir listar setores cadastrados.
 
 **RF10 — Atualizar e desativar setor**
 
-O sistema deverá permitir que administradores atualizem os dados de um setor ou o desativem, preservando os registros históricos relacionados.
+O sistema deverá permitir que administradores  desativem.
 
 **RF11 — Associar usuários a setores**
 
@@ -186,4 +186,4 @@ O sistema deverá disponibilizar o tempo médio de solução dos chamados conclu
 
 ___
 
-#### *v1.0.1*
+#### *v1.0.2*
