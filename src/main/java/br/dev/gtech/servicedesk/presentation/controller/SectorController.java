@@ -41,10 +41,6 @@ public class SectorController {
     public ResponseEntity<List<Sector>> handleGetSectors() {
         List<Sector> sectors = getSectorsUseCase.get();
 
-        if (sectors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sectors);
-        }
-
         return ResponseEntity.ok(sectors);
     }
 
