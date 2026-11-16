@@ -25,6 +25,8 @@ import br.dev.gtech.servicedesk.domain.model.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,6 +65,7 @@ class AddUserToSectorServiceTest {
                 "Usuário não encontrado");
 
         verify(userRepositoryPort, times(1)).findById(VALID_USERID);
+        verify(userRepositoryPort, never()).save(any());
     }
 
     @Test
@@ -80,6 +83,7 @@ class AddUserToSectorServiceTest {
 
         verify(userRepositoryPort, times(1)).findById(VALID_USERID);
         verify(sectorRepositoryPort, times(1)).findById(VALID_SECTOR_ID);
+        verify(userRepositoryPort, never()).save(user);
     }
 
     @Test
@@ -95,6 +99,7 @@ class AddUserToSectorServiceTest {
                 "Não é possível adicionar um usuário inativo a um setor");
 
         verify(userRepositoryPort, times(1)).findById(VALID_USERID);
+        verify(userRepositoryPort, never()).save(user);
     }
 
     @Test
@@ -114,6 +119,7 @@ class AddUserToSectorServiceTest {
                 "Não é possível adicionar um usuário a um setor inativo");
 
         verify(sectorRepositoryPort, times(1)).findById(VALID_SECTOR_ID);
+        verify(userRepositoryPort, never()).save(user);
     }
 
     @Test
@@ -133,6 +139,7 @@ class AddUserToSectorServiceTest {
 
         verify(userRepositoryPort, times(1)).findById(VALID_USERID);
         verify(sectorRepositoryPort, times(1)).findById(VALID_SECTOR_ID);
+        verify(userRepositoryPort, never()).save(user);
     }
 
     @Test
@@ -159,5 +166,6 @@ class AddUserToSectorServiceTest {
 
         verify(userRepositoryPort, times(1)).findById(VALID_USERID);
         verify(sectorRepositoryPort, times(1)).findById(VALID_SECTOR_ID);
+        verify(userRepositoryPort, times(1)).save(userWithSectorId);
     }
 }
