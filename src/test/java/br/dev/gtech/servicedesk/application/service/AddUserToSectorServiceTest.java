@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.DisabledSectorException;
 import br.dev.gtech.servicedesk.application.exception.DisabledUserException;
-import br.dev.gtech.servicedesk.application.exception.SectorNotFoundedException;
+import br.dev.gtech.servicedesk.application.exception.SectorNotFoundException;
 import br.dev.gtech.servicedesk.application.exception.UserAlreadyAssociatedToSectorException;
 import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.out.SectorRepositoryPort;
@@ -74,7 +74,7 @@ class AddUserToSectorServiceTest {
         when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
         when(sectorRepositoryPort.findById(VALID_SECTOR_ID)).thenReturn(Optional.empty());
 
-        assertThrows(SectorNotFoundedException.class, () ->
+        assertThrows(SectorNotFoundException.class, () ->
                         addUserToSectorService.execute(VALID_USERID, VALID_SECTOR_ID),
                 "Setor não encontrado");
 

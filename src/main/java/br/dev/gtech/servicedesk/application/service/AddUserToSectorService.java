@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.DisabledSectorException;
 import br.dev.gtech.servicedesk.application.exception.DisabledUserException;
-import br.dev.gtech.servicedesk.application.exception.SectorNotFoundedException;
+import br.dev.gtech.servicedesk.application.exception.SectorNotFoundException;
 import br.dev.gtech.servicedesk.application.exception.UserAlreadyAssociatedToSectorException;
 import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.in.AddUserToSectorUseCase;
@@ -36,7 +36,7 @@ public class AddUserToSectorService implements AddUserToSectorUseCase {
         }
 
         Sector foundedSector = sectorRepositoryPort.findById(sectorId).orElseThrow(() ->
-                new SectorNotFoundedException("Setor não encontrado"));
+                new SectorNotFoundException("Setor não encontrado"));
 
         if (!foundedSector.isActive()) {
             throw new DisabledSectorException(

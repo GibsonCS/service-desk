@@ -1,7 +1,7 @@
 package br.dev.gtech.servicedesk.application.exception;
 
-public class SectorNotFoundedException extends RuntimeException {
-    public SectorNotFoundedException(String message) {
+public class SectorNotFoundException extends RuntimeException {
+    public SectorNotFoundException(String message) {
         super(message);
     }
 }

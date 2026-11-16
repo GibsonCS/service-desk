@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.SectorAlreadyDisabledException;
-import br.dev.gtech.servicedesk.application.exception.SectorNotFoundedException;
+import br.dev.gtech.servicedesk.application.exception.SectorNotFoundException;
 import br.dev.gtech.servicedesk.application.port.out.SectorRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.Sector;
 
@@ -43,7 +43,7 @@ class DisableSectorServiceTest {
     void shouldDisableSectorNotFound() {
         when(sectorRepositoryPort.findById(VALID_ID)).thenReturn(Optional.empty());
 
-        assertThrows(SectorNotFoundedException.class, () ->
+        assertThrows(SectorNotFoundException.class, () ->
                 disableSectorService.execute(VALID_ID), "Setor não encontrado");
 
         verify(sectorRepositoryPort, times(1)).findById(VALID_ID);
