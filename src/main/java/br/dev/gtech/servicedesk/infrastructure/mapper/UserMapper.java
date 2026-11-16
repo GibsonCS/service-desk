@@ -15,7 +15,7 @@ public class UserMapper {
                 userEntity.getIsActive(),
                 userEntity.getUpdatedAt(),
                 userEntity.getCreatedAt(),
-                null
+                userEntity.getSectorId()
         );
     }
 
@@ -28,7 +28,8 @@ public class UserMapper {
                 user.getRole(),
                 user.getIsActive(),
                 user.getUpdatedAt(),
-                user.getCreatedAt()
+                user.getCreatedAt(),
+                user.getSectorId()
         );
     }
 }

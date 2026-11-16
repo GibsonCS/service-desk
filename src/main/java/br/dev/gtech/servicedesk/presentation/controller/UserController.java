@@ -6,12 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import br.dev.gtech.servicedesk.application.port.in.AddUserToSectorUseCase;
 import br.dev.gtech.servicedesk.application.port.in.CreateUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.DisableUserUseCase;
 import br.dev.gtech.servicedesk.application.port.in.GetUserUseCase;
@@ -36,6 +38,7 @@ public class UserController {
     private final UpdateEmailUseCase updateEmailUseCase;
     private final UpdatePasswordUseCase updatePasswordUseCase;
     private final DisableUserUseCase disableUserUseCase;
+    private final AddUserToSectorUseCase addUserToSectorUseCase;
 
     @PostMapping
     public ResponseEntity<UUID> handleCreateUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
@@ -88,6 +91,13 @@ public class UserController {
     @PatchMapping("/{id}/disable")
     public ResponseEntity<Void> handleDisableUser(@PathVariable UUID id) {
         disableUserUseCase.disable(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{userId}/sectors/{sectorId}")
+    public ResponseEntity<Void> handleAddUserToSector(@PathVariable UUID userId, @PathVariable UUID sectorId) {
+        addUserToSectorUseCase.execute(userId, sectorId);
 
         return ResponseEntity.noContent().build();
     }

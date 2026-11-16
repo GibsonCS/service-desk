@@ -44,11 +44,14 @@ public class UserEntity {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @Column(name = "sector_id")
+    private UUID sectorId;
+
     public UserEntity() {
     }
 
     public UserEntity(UUID id, String name, String email, String hashPassword, Role role,
-                      boolean isActive, Instant updatedAt, Instant createdAt
+                      boolean isActive, Instant updatedAt, Instant createdAt, UUID sectorId
     ) {
         this.id = id;
         this.name = name;
@@ -58,5 +61,6 @@ public class UserEntity {
         this.isActive = isActive;
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
+        this.sectorId = sectorId;
     }
 }

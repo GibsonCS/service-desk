@@ -13,8 +13,9 @@ public record GetUserDTO(
         Role role,
         Boolean isActive,
         Instant updatedAt,
-        Instant createdAt
-) {
+        Instant createdAt,
+        UUID sectorId
+        ) {
     public static GetUserDTO toDTO(User user) {
         return new GetUserDTO(
                 user.getId(),
@@ -23,7 +24,8 @@ public record GetUserDTO(
                 user.getRole(),
                 user.getIsActive(),
                 user.getUpdatedAt(),
-                user.getCreatedAt()
+                user.getCreatedAt(),
+                user.getSectorId()
         );
     }
 }
