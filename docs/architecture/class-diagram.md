@@ -16,16 +16,16 @@ classDiagram
         -UserRole role
         -Boolean active
         -UUID sectorId
-        -LocalDate createdAt
-        -LocalDate updatedAt
+        -Instant createdAt
+        -Instant updatedAt
     }
 
     class Sector {
         -UUID id
         -String name
         -Boolean active
-        -LocalDate createdAt
-        -LocalDate updatedAt
+        -Instant createdAt
+        -Instant updatedAt
     }
 
     class Ticket {
@@ -37,11 +37,11 @@ classDiagram
         -UUID requesterId
         -UUID sectorId
         -UUID assigneeId
-        -LocalDate createdAt
-        -LocalDate firstStartedAt
-        -LocalDate resolvedAt
-        -LocalDate cancelledAt
-        -LocalDate archivedAt
+        -Instant createdAt
+        -Instant firstStartedAt
+        -Instant resolvedAt
+        -Instant cancelledAt
+        -Instant archivedAt
     }
 
     class TicketComment {
@@ -49,7 +49,7 @@ classDiagram
         -UUID ticketId
         -UUID authorId
         -String content
-        -LocalDate createdAt
+        -Instant createdAt
     }
 
     class UserRole {
@@ -96,3 +96,5 @@ classDiagram
 - **Ticket e Sector:** cada chamado pertence a um setor.
 - **TicketComment:** registra os comentários associados a um chamado e o usuário que os escreveu.
 - **Enums:** restringem os valores válidos de papéis, status, prioridades e tipos de evento.
+
+v1.0.1
