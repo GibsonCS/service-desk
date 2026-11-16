@@ -14,9 +14,10 @@ public class User {
     private final boolean isActive;
     private final Instant updatedAt;
     private final Instant createdAt;
+    private final UUID sectorId;
 
-    public User(UUID id, String name, String email, String hashPassword, Role role,
-                boolean isActive, Instant updatedAt, Instant createdAt
+    private User(UUID id, String name, String email, String hashPassword, Role role,
+                 boolean isActive, Instant updatedAt, Instant createdAt, UUID sectorId
     ) {
         this.id = id;
         this.name = name;
@@ -26,10 +27,11 @@ public class User {
         this.isActive = isActive;
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
+        this.sectorId = sectorId;
     }
 
     public static User create(UUID id, String name, String email, String hashPassword, Role role,
-                              boolean isActive, Instant updatedAt, Instant createdAt
+                              boolean isActive, Instant updatedAt, Instant createdAt, UUID sectorId
     ) {
         return new User(
                 id,
@@ -39,9 +41,11 @@ public class User {
                 role,
                 isActive,
                 updatedAt,
-                createdAt
+                createdAt,
+                sectorId
         );
     }
+
 
     public User disabled() {
         return new User(
@@ -52,7 +56,8 @@ public class User {
                 role,
                 false,
                 Instant.now(),
-                createdAt
+                createdAt,
+                sectorId
         );
     }
 
@@ -65,7 +70,9 @@ public class User {
                 role,
                 isActive,
                 Instant.now(),
-                createdAt);
+                createdAt,
+                sectorId
+        );
     }
 
     public User withEmail(String email) {
@@ -77,7 +84,8 @@ public class User {
                 role,
                 isActive,
                 Instant.now(),
-                createdAt);
+                createdAt, sectorId
+        );
     }
 
     public User withPasswordHash(String passwordHash) {
@@ -89,7 +97,23 @@ public class User {
                 role,
                 isActive,
                 Instant.now(),
-                createdAt);
+                createdAt,
+                sectorId
+        );
+    }
+
+    public User withSectorId(UUID sectorId){
+        return new User(
+                id,
+                name,
+                email,
+                hashPassword,
+                role,
+                isActive,
+                Instant.now(),
+                createdAt,
+                sectorId
+        );
     }
 
     public UUID getId() {
@@ -122,5 +146,9 @@ public class User {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public UUID getSectorId() {
+        return sectorId;
     }
 }

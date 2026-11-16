@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,7 +53,7 @@ class DisableUserServiceTest {
     @Test
     void shouldNotDisableIfUserAlreadyDisable() {
         User user = User.create(VALID_USERID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_ROLE,
-                false, VALID_UPDATED_AT, VALID_CREATED_AT);
+                false, VALID_UPDATED_AT, VALID_CREATED_AT, null);
 
         when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
 
@@ -65,7 +64,7 @@ class DisableUserServiceTest {
     @Test
     void shouldDisableUser() {
         User user = User.create(VALID_USERID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_ROLE,
-                VALID_IS_ACTIVE, VALID_UPDATED_AT, VALID_CREATED_AT);
+                VALID_IS_ACTIVE, VALID_UPDATED_AT, VALID_CREATED_AT, null);
 
         when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
 

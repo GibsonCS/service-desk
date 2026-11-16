@@ -39,7 +39,8 @@ public class CreateUserService implements CreateUserUseCase {
                 Role.USER,
                 true,
                 now,
-                now
+                now,
+                null
         );
 
         userRepositoryPort.save(user);

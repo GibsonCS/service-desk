@@ -6,7 +6,7 @@ import br.dev.gtech.servicedesk.infrastructure.entity.UserEntity;
 public class UserMapper {
 
     public static User toDomain(UserEntity userEntity) {
-        return new User(
+        return User.create(
                 userEntity.getId(),
                 userEntity.getName(),
                 userEntity.getEmail(),
@@ -14,7 +14,8 @@ public class UserMapper {
                 userEntity.getRole(),
                 userEntity.getIsActive(),
                 userEntity.getUpdatedAt(),
-                userEntity.getCreatedAt()
+                userEntity.getCreatedAt(),
+                null
         );
     }
 

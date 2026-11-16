@@ -46,7 +46,7 @@ class UpdateEmailTest {
     void setup() {
         user = User.create(
                 VALID_USERID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_ROLE, VALID_IS_ACTIVE,
-                VALID_UPDATED_AT, VALID_CREATED_AT);
+                VALID_UPDATED_AT, VALID_CREATED_AT, null);
     }
 
     @Test

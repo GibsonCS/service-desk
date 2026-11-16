@@ -39,7 +39,7 @@ class GetUserServiceTest {
     @Test
     void shouldReturnAnUser() {
         User user = User.create(VALID_USERID, VALID_NAME, VALID_EMAIL, VALID_PASSWORD, VALID_ROLE,
-                VALID_IS_ACTIVE, VALID_UPDATED_AT, VALID_CREATED_AT);
+                VALID_IS_ACTIVE, VALID_UPDATED_AT, VALID_CREATED_AT, null);
 
         when(userRepositoryPort.findById(VALID_USERID)).thenReturn(Optional.of(user));
 
