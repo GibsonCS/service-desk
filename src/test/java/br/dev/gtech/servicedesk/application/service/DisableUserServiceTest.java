@@ -76,7 +76,7 @@ class DisableUserServiceTest {
 
         User disabledUser = captor.getValue();
 
-        assertEquals(false, disabledUser.getIsActive());
+        assertEquals(false, disabledUser.isActive());
         assertEquals(user.getEmail(), disabledUser.getEmail());
         assertEquals(user.getId(), disabledUser.getId());
         assertEquals(user.getName(), disabledUser.getName());

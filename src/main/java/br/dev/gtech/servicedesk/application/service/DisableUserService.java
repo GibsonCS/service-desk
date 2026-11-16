@@ -21,7 +21,7 @@ public class DisableUserService implements DisableUserUseCase {
         User foundedUser = userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException("Usuário não encontrado"));
 
-        if (!foundedUser.getIsActive()) {
+        if (!foundedUser.isActive()) {
             throw new UserAlreadyDisable("Usuário já está inativo");
         }
 

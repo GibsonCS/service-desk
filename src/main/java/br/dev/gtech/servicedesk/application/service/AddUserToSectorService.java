@@ -30,7 +30,7 @@ public class AddUserToSectorService implements AddUserToSectorUseCase {
                 new UserNotFoundException("Usuário não encontrado"));
 
 
-        if (!foundedUser.getIsActive()) {
+        if (!foundedUser.isActive()) {
             throw new DisabledUserException(
                     "Não é possível adicionar um usuário inativo a um setor.");
         }

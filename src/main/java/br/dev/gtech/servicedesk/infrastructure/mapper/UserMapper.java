@@ -26,7 +26,7 @@ public class UserMapper {
                 user.getEmail(),
                 user.getHashPassword(),
                 user.getRole(),
-                user.getIsActive(),
+                user.isActive(),
                 user.getUpdatedAt(),
                 user.getCreatedAt(),
                 user.getSectorId()

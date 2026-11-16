@@ -136,7 +136,7 @@ public class User {
         return role;
     }
 
-    public Boolean getIsActive() {
+    public Boolean isActive() {
         return isActive;
     }
 
