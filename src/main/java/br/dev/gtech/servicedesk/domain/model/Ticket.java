@@ -54,6 +54,13 @@ public class Ticket {
         );
     }
 
+    public Ticket withChangedPriority(TicketPriority ticketPriority) {
+        return new Ticket(
+                id, title, description, status, ticketPriority, requesterId, sectorId, assigneeId,
+                createdAt, firstStartedAt, resolvedAt, cancelledAt, archivedAt
+        );
+    }
+
     public UUID getId() {
         return id;
     }
