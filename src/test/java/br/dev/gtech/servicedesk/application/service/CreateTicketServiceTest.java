@@ -8,12 +8,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.InvalidRequesterIdException;
 import br.dev.gtech.servicedesk.application.exception.SectorIdNotFoundException;
+import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
+import br.dev.gtech.servicedesk.application.port.out.SectorRepositoryPort;
 import br.dev.gtech.servicedesk.application.port.out.TickedRepositoryPort;
+import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
+import br.dev.gtech.servicedesk.domain.model.Sector;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
+import br.dev.gtech.servicedesk.domain.model.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateTicketServiceTest {
@@ -32,11 +39,28 @@ class CreateTicketServiceTest {
     @Mock
     TickedRepositoryPort tickedRepositoryPort;
 
+    @Mock
+    SectorRepositoryPort sectorRepositoryPort;
+
+    @Mock
+    UserRepositoryPort userRepositoryPort;
+
     @InjectMocks
     CreateTicketService createTicketService;
 
+    @Mock
+    User user;
+
+    @Mock
+    Sector sector;
+
     @Test
+    @DisplayName("Deve criar um ticket")
     void shouldCreateAnTicket() {
+
+        when(userRepositoryPort.findById(REQUESTER_ID)).thenReturn(Optional.of(user));
+        when(sectorRepositoryPort.findById(SECTOR_ID)).thenReturn(Optional.of(sector));
+
         ArgumentCaptor<Ticket> captor = ArgumentCaptor.forClass(Ticket.class);
 
         createTicketService.execute(TITLE, DESCRIPTION, SECTOR_ID, REQUESTER_ID);
@@ -46,7 +70,7 @@ class CreateTicketServiceTest {
         Ticket savedTicket = captor.getValue();
 
         assertEquals(TITLE, savedTicket.getTitle());
-        assertEquals(SECTOR_ID, savedTicket.getSectorId());
+        assertEquals(DESCRIPTION, savedTicket.getDescription());
 
         verify(tickedRepositoryPort, times(1)).save(savedTicket);
     }
@@ -69,5 +93,30 @@ class CreateTicketServiceTest {
         verify(tickedRepositoryPort, never()).save(any());
     }
 
+    @Test
+    @DisplayName("Não deve criar ticket de um requisitante inexistente")
+    void shouldNotCreateTicketWithFoundedRequester() {
 
+        when(userRepositoryPort.findById(REQUESTER_ID)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> createTicketService.execute(TITLE,
+                DESCRIPTION, SECTOR_ID, REQUESTER_ID), "Id do requisitante não encontrado");
+
+        verify(userRepositoryPort, times(1)).findById(REQUESTER_ID);
+        verify(tickedRepositoryPort, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Não deve criar ticket de um setor inexistente")
+    void shouldNotCreateTicketWithNonExistentSector() {
+
+        when(userRepositoryPort.findById(REQUESTER_ID)).thenReturn(Optional.of(user));
+        when(sectorRepositoryPort.findById(SECTOR_ID)).thenReturn(Optional.empty());
+
+        assertThrows(SectorIdNotFoundException.class, () -> createTicketService.execute(TITLE,
+                DESCRIPTION, SECTOR_ID, REQUESTER_ID), "Id do setor não encontrado");
+
+        verify(sectorRepositoryPort, times(1)).findById(SECTOR_ID);
+        verify(tickedRepositoryPort, never()).save(any());
+    }
 }

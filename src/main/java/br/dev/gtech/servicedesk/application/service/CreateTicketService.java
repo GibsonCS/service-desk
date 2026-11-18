@@ -1,22 +1,31 @@
 package br.dev.gtech.servicedesk.application.service;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.exception.InvalidRequesterIdException;
 import br.dev.gtech.servicedesk.application.exception.SectorIdNotFoundException;
+import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.in.CreateTicketUseCase;
+import br.dev.gtech.servicedesk.application.port.out.SectorRepositoryPort;
 import br.dev.gtech.servicedesk.application.port.out.TickedRepositoryPort;
+import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.enums.TicketStatus;
+import br.dev.gtech.servicedesk.domain.model.Sector;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
+import br.dev.gtech.servicedesk.domain.model.User;
 
 public class CreateTicketService implements CreateTicketUseCase {
 
     private final TickedRepositoryPort tickedRepositoryPort;
+    private final UserRepositoryPort userRepositoryPort;
+    private final SectorRepositoryPort sectorRepositoryPort;
 
-    public CreateTicketService(TickedRepositoryPort tickedRepositoryPort) {
+    public CreateTicketService(TickedRepositoryPort tickedRepositoryPort,
+                               UserRepositoryPort userRepositoryPort, SectorRepositoryPort sectorRepositoryPort) {
         this.tickedRepositoryPort = tickedRepositoryPort;
+        this.userRepositoryPort = userRepositoryPort;
+        this.sectorRepositoryPort = sectorRepositoryPort;
     }
 
     @Override
@@ -25,9 +34,15 @@ public class CreateTicketService implements CreateTicketUseCase {
             throw new SectorIdNotFoundException("Id do setor não pode ser nullo");
         }
 
-        if(requesterId == null){
+        if (requesterId == null) {
             throw new InvalidRequesterIdException("Id do requisitante não pode ser vazio");
         }
+
+        User foundedUser = userRepositoryPort.findById(requesterId).orElseThrow(() ->
+                new UserNotFoundException("Id do requisitante não encontrado"));
+
+        Sector foundedSector = sectorRepositoryPort.findById(sectorId).orElseThrow(() ->
+                new SectorIdNotFoundException("Id do setor não encontrado"));
 
         Instant now = Instant.now();
 
@@ -37,8 +52,8 @@ public class CreateTicketService implements CreateTicketUseCase {
                 description,
                 TicketStatus.PENDENTE,
                 null,
-                requesterId,
-                sectorId,
+                foundedUser.getId(),
+                foundedSector.getId(),
                 null,
                 now,
                 null,
