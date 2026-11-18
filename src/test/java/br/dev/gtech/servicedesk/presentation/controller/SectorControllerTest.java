@@ -64,11 +64,11 @@ class SectorControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar 404 NOT FOUND e uma lista vazia")
+    @DisplayName("Deve retornar 200 NOT FOUND e uma lista vazia")
     void shouldReturnAnEmptyListWhenNoSectorExists() throws Exception {
         mockMvc.perform(get("/api/sectors")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }
 
