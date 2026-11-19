@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
-import br.dev.gtech.servicedesk.application.port.out.TickedRepositoryPort;
+import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
 import br.dev.gtech.servicedesk.infrastructure.entity.TicketEntity;
 import br.dev.gtech.servicedesk.infrastructure.mapper.TicketMapper;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class TicketRepositoryAdapter implements TickedRepositoryPort {
+public class TicketRepositoryAdapter implements TicketRepositoryPort {
 
     private final TicketRepository ticketRepository;
 

@@ -17,7 +17,7 @@ import java.util.UUID;
 import br.dev.gtech.servicedesk.application.exception.InvalidTickedIdException;
 import br.dev.gtech.servicedesk.application.exception.TicketNotFoundException;
 import br.dev.gtech.servicedesk.application.exception.TicketPriorityException;
-import br.dev.gtech.servicedesk.application.port.out.TickedRepositoryPort;
+import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
 import br.dev.gtech.servicedesk.domain.enums.TicketPriority;
 import br.dev.gtech.servicedesk.domain.enums.TicketStatus;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
@@ -30,16 +30,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UpdateTicketPriorityServiceTest {
+class UpdateTicketPriorityUseCaseServiceTest {
     UUID TICKED_ID = UUID.randomUUID();
     TicketPriority TICKET_PRIORITY = TicketPriority.CRITICA;
 
     @Mock
-    TickedRepositoryPort tickedRepositoryPort;
+    TicketRepositoryPort ticketRepositoryPort;
 
     @InjectMocks
-    UpdateTicketPriorityService updateTicketPriorityService;
-
+    UpdateTicketPriorityUseCaseService updateTicketPriorityService;
 
     Ticket ticket;
 
@@ -67,7 +66,7 @@ class UpdateTicketPriorityServiceTest {
                         updateTicketPriorityService.execute(null, TICKET_PRIORITY),
                 "Id do ticket não deve ser vazio");
 
-        verify(tickedRepositoryPort, never()).save(ticket);
+        verify(ticketRepositoryPort, never()).save(ticket);
     }
 
     @Test
@@ -77,37 +76,38 @@ class UpdateTicketPriorityServiceTest {
                         updateTicketPriorityService.execute(TICKED_ID, TICKET_PRIORITY),
                 "Chamado não encontrado");
 
-        verify(tickedRepositoryPort, times(1)).findById(TICKED_ID);
+        verify(ticketRepositoryPort, times(1)).findById(TICKED_ID);
     }
 
     @Test
     @DisplayName("Não deve atualizar prioridade de um ticket com o mesmo status de prioridade")
     void shouldNotUpdateTicketPriorityWithEqualsStatus() {
-        when(tickedRepositoryPort.findById(TICKED_ID)).thenReturn(Optional.of(ticket));
+        when(ticketRepositoryPort.findById(TICKED_ID)).thenReturn(Optional.of(ticket));
 
         assertThrows(TicketPriorityException.class, () ->
                         updateTicketPriorityService.execute(TICKED_ID, TICKET_PRIORITY),
                 "Chamado já classificado como");
 
-        verify(tickedRepositoryPort, times(1)).findById(TICKED_ID);
+        verify(ticketRepositoryPort, times(1)).findById(TICKED_ID);
+        verify(ticketRepositoryPort, never()).save(ticket);
     }
 
     @Test
     @DisplayName("Deve atualizar prioridade de um ticket")
     void shouldUpdateTicketPriority() {
-        when(tickedRepositoryPort.findById(TICKED_ID)).thenReturn(Optional.of(ticket));
+        when(ticketRepositoryPort.findById(TICKED_ID)).thenReturn(Optional.of(ticket));
 
         updateTicketPriorityService.execute(TICKED_ID, TicketPriority.BAIXA);
 
         ArgumentCaptor<Ticket> captor = ArgumentCaptor.forClass(Ticket.class);
-        verify(tickedRepositoryPort).save(captor.capture());
+        verify(ticketRepositoryPort).save(captor.capture());
 
         Ticket savedTicket = captor.getValue();
 
         assertEquals(TicketPriority.BAIXA, savedTicket.getPriority());
 
-        verify(tickedRepositoryPort, times(1)).save(savedTicket);
-        verify(tickedRepositoryPort, times(1)).findById(TICKED_ID);
+        verify(ticketRepositoryPort, times(1)).save(savedTicket);
+        verify(ticketRepositoryPort, times(1)).findById(TICKED_ID);
     }
 }
 

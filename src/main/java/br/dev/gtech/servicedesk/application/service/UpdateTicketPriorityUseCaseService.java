@@ -6,16 +6,16 @@ import java.util.UUID;
 import br.dev.gtech.servicedesk.application.exception.InvalidTickedIdException;
 import br.dev.gtech.servicedesk.application.exception.TicketNotFoundException;
 import br.dev.gtech.servicedesk.application.exception.TicketPriorityException;
-import br.dev.gtech.servicedesk.application.port.in.UpdateTicketPriority;
-import br.dev.gtech.servicedesk.application.port.out.TickedRepositoryPort;
+import br.dev.gtech.servicedesk.application.port.in.UpdateTicketPriorityUseCase;
+import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
 import br.dev.gtech.servicedesk.domain.enums.TicketPriority;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
 
-public class UpdateTicketPriorityService implements UpdateTicketPriority {
-    private final TickedRepositoryPort tickedRepositoryPort;
+public class UpdateTicketPriorityUseCaseService implements UpdateTicketPriorityUseCase {
+    private final TicketRepositoryPort ticketRepositoryPort;
 
-    public UpdateTicketPriorityService(TickedRepositoryPort tickedRepositoryPort) {
-        this.tickedRepositoryPort = tickedRepositoryPort;
+    public UpdateTicketPriorityUseCaseService(TicketRepositoryPort ticketRepositoryPort) {
+        this.ticketRepositoryPort = ticketRepositoryPort;
     }
 
     @Override
@@ -24,16 +24,16 @@ public class UpdateTicketPriorityService implements UpdateTicketPriority {
             throw new InvalidTickedIdException("Id do ticket não deve ser vazio");
         }
 
-        Ticket foundedTicket = tickedRepositoryPort.findById(ticketId).orElseThrow(() ->
+        Ticket foundedTicket = ticketRepositoryPort.findById(ticketId).orElseThrow(() ->
                 new TicketNotFoundException("Chamado não encontrado"));
 
 
         if (Objects.equals(foundedTicket.getPriority(), ticketPriority)) {
-            throw new TicketPriorityException("Chamado já classificado como");
+            throw new TicketPriorityException("Chamado já definido com a prioridade atual");
         }
 
         Ticket ticketWithChangedPriority = foundedTicket.withChangedPriority(ticketPriority);
 
-        tickedRepositoryPort.save(ticketWithChangedPriority);
+        ticketRepositoryPort.save(ticketWithChangedPriority);
     }
 }

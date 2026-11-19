@@ -7,11 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CreateTicketDTO(
-        @Size(min = 5,  message = "O título deve ter no mínimo 5 caracters")
+        @Size(min = 5,  message = "O título deve ter no mínimo 5 caracteres")
         @NotBlank
         String title,
 
-        @Size(min = 30, message = "A descrição deve ter no mínimo 10 caracteres")
+        @Size(min = 30, message = "A descrição deve ter no mínimo 30 caracteres")
         @NotBlank
         String description,
 

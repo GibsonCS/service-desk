@@ -25,6 +25,7 @@ public class TicketEntity {
     @Column(nullable = false)
     private String description;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TicketStatus status;
     @Enumerated(EnumType.STRING)
     private TicketPriority priority;

@@ -15,7 +15,7 @@ import br.dev.gtech.servicedesk.application.exception.InvalidRequesterIdExceptio
 import br.dev.gtech.servicedesk.application.exception.SectorIdNotFoundException;
 import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.out.SectorRepositoryPort;
-import br.dev.gtech.servicedesk.application.port.out.TickedRepositoryPort;
+import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.Sector;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
@@ -37,7 +37,7 @@ class CreateTicketServiceTest {
     UUID REQUESTER_ID = UUID.randomUUID();
 
     @Mock
-    TickedRepositoryPort tickedRepositoryPort;
+    TicketRepositoryPort ticketRepositoryPort;
 
     @Mock
     SectorRepositoryPort sectorRepositoryPort;
@@ -65,14 +65,14 @@ class CreateTicketServiceTest {
 
         createTicketService.execute(TITLE, DESCRIPTION, SECTOR_ID, REQUESTER_ID);
 
-        verify(tickedRepositoryPort).save(captor.capture());
+        verify(ticketRepositoryPort).save(captor.capture());
 
         Ticket savedTicket = captor.getValue();
 
         assertEquals(TITLE, savedTicket.getTitle());
         assertEquals(DESCRIPTION, savedTicket.getDescription());
 
-        verify(tickedRepositoryPort, times(1)).save(savedTicket);
+        verify(ticketRepositoryPort, times(1)).save(savedTicket);
     }
 
     @Test
@@ -81,7 +81,7 @@ class CreateTicketServiceTest {
         assertThrows(SectorIdNotFoundException.class, () -> createTicketService.execute(TITLE,
                 DESCRIPTION, null, REQUESTER_ID), "Id do setor não pode ser nullo");
 
-        verify(tickedRepositoryPort, never()).save(any());
+        verify(ticketRepositoryPort, never()).save(any());
     }
 
     @Test
@@ -90,7 +90,7 @@ class CreateTicketServiceTest {
         assertThrows(InvalidRequesterIdException.class, () -> createTicketService.execute(TITLE,
                 DESCRIPTION, SECTOR_ID, null), "Id do requisitante não pode ser vazio");
 
-        verify(tickedRepositoryPort, never()).save(any());
+        verify(ticketRepositoryPort, never()).save(any());
     }
 
     @Test
@@ -103,7 +103,7 @@ class CreateTicketServiceTest {
                 DESCRIPTION, SECTOR_ID, REQUESTER_ID), "Id do requisitante não encontrado");
 
         verify(userRepositoryPort, times(1)).findById(REQUESTER_ID);
-        verify(tickedRepositoryPort, never()).save(any());
+        verify(ticketRepositoryPort, never()).save(any());
     }
 
     @Test
@@ -117,6 +117,6 @@ class CreateTicketServiceTest {
                 DESCRIPTION, SECTOR_ID, REQUESTER_ID), "Id do setor não encontrado");
 
         verify(sectorRepositoryPort, times(1)).findById(SECTOR_ID);
-        verify(tickedRepositoryPort, never()).save(any());
+        verify(ticketRepositoryPort, never()).save(any());
     }
 }

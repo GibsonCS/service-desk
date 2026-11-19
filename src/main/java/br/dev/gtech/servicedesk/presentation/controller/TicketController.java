@@ -3,6 +3,7 @@ package br.dev.gtech.servicedesk.presentation.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.port.in.CreateTicketUseCase;
-import br.dev.gtech.servicedesk.application.port.in.UpdateTicketPriority;
+import br.dev.gtech.servicedesk.application.port.in.UpdateTicketPriorityUseCase;
 import br.dev.gtech.servicedesk.presentation.dto.CreateTicketDTO;
 import br.dev.gtech.servicedesk.presentation.dto.UpdateTicketPriorityDTO;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TicketController {
     private final CreateTicketUseCase createTicketUseCase;
-    private final UpdateTicketPriority updateTicketPriority;
+    private final UpdateTicketPriorityUseCase updateTicketPriorityUseCase;
 
     @PostMapping
     public ResponseEntity<UUID> handleCreateTicket(@Valid @RequestBody CreateTicketDTO createTicketDTO) {
@@ -33,12 +34,13 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketId);
     }
 
-    @PatchMapping("/priority")
+    @PatchMapping("/{ticketId}/priority")
     public ResponseEntity<Void> handleUpdateTicketPriority(
+            @PathVariable UUID ticketId,
             @Valid @RequestBody UpdateTicketPriorityDTO updateTicketPriorityDTO) {
 
-        updateTicketPriority.execute(
-                updateTicketPriorityDTO.id(), updateTicketPriorityDTO.ticketPriority());
+        updateTicketPriorityUseCase.execute(
+                ticketId, updateTicketPriorityDTO.ticketPriority());
 
         return ResponseEntity.noContent().build();
     }

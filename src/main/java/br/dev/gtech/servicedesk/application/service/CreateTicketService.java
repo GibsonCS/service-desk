@@ -8,8 +8,9 @@ import br.dev.gtech.servicedesk.application.exception.SectorIdNotFoundException;
 import br.dev.gtech.servicedesk.application.exception.UserNotFoundException;
 import br.dev.gtech.servicedesk.application.port.in.CreateTicketUseCase;
 import br.dev.gtech.servicedesk.application.port.out.SectorRepositoryPort;
-import br.dev.gtech.servicedesk.application.port.out.TickedRepositoryPort;
+import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
 import br.dev.gtech.servicedesk.application.port.out.UserRepositoryPort;
+import br.dev.gtech.servicedesk.domain.enums.TicketPriority;
 import br.dev.gtech.servicedesk.domain.enums.TicketStatus;
 import br.dev.gtech.servicedesk.domain.model.Sector;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
@@ -17,13 +18,13 @@ import br.dev.gtech.servicedesk.domain.model.User;
 
 public class CreateTicketService implements CreateTicketUseCase {
 
-    private final TickedRepositoryPort tickedRepositoryPort;
+    private final TicketRepositoryPort ticketRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
     private final SectorRepositoryPort sectorRepositoryPort;
 
-    public CreateTicketService(TickedRepositoryPort tickedRepositoryPort,
+    public CreateTicketService(TicketRepositoryPort ticketRepositoryPort,
                                UserRepositoryPort userRepositoryPort, SectorRepositoryPort sectorRepositoryPort) {
-        this.tickedRepositoryPort = tickedRepositoryPort;
+        this.ticketRepositoryPort = ticketRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
         this.sectorRepositoryPort = sectorRepositoryPort;
     }
@@ -51,7 +52,7 @@ public class CreateTicketService implements CreateTicketUseCase {
                 title,
                 description,
                 TicketStatus.PENDENTE,
-                null,
+                TicketPriority.BAIXA,
                 foundedUser.getId(),
                 foundedSector.getId(),
                 null,
@@ -62,7 +63,7 @@ public class CreateTicketService implements CreateTicketUseCase {
                 null
         );
 
-        tickedRepositoryPort.save(ticket);
+        ticketRepositoryPort.save(ticket);
 
         return ticket.getId();
     }

@@ -4,6 +4,6 @@ import java.util.UUID;
 
 import br.dev.gtech.servicedesk.domain.enums.TicketPriority;
 
-public interface UpdateTicketPriority {
+public interface UpdateTicketPriorityUseCase {
     void execute(UUID ticketId, TicketPriority ticketPriority);
 }
