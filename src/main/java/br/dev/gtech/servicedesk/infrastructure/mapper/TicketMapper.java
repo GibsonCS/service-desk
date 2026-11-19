@@ -14,4 +14,14 @@ public class TicketMapper {
                 ticket.getArchivedAt()
         );
     }
+
+    public static Ticket toDomain(TicketEntity ticketEntity) {
+        return Ticket.create(
+                ticketEntity.getId(), ticketEntity.getTitle(), ticketEntity.getDescription(),
+                ticketEntity.getStatus(), ticketEntity.getPriority(), ticketEntity.getRequesterId(),
+                ticketEntity.getSectorId(), ticketEntity.getAssigneeId(),
+                ticketEntity.getCreatedAt(), ticketEntity.getFirstStartedAt(),
+                ticketEntity.getResolvedAt(), ticketEntity.getCancelledAt(),
+                ticketEntity.getArchivedAt());
+    }
 }

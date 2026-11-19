@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import br.dev.gtech.servicedesk.application.port.out.TickedRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
+import br.dev.gtech.servicedesk.infrastructure.entity.TicketEntity;
 import br.dev.gtech.servicedesk.infrastructure.mapper.TicketMapper;
 import br.dev.gtech.servicedesk.infrastructure.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,14 @@ public class TicketRepositoryAdapter implements TickedRepositoryPort {
 
     @Override
     public Optional<Ticket> findById(UUID ticketId) {
-        return Optional.empty();
+        Optional<TicketEntity> entityTicket = ticketRepository.findById(ticketId);
+
+        if (entityTicket.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Ticket ticket = TicketMapper.toDomain(entityTicket.get());
+
+        return Optional.of(ticket);
     }
 }
