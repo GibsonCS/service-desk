@@ -36,7 +36,7 @@ public class CreateUserService implements CreateUserUseCase {
                 name,
                 normalizedEmail,
                 passwordEncoder.encode(password),
-                Role.USER,
+                Role.COLLABORATOR,
                 true,
                 now,
                 now,
