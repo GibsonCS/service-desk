@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class TicketRepositoryAdapter implements TicketRepositoryPort {
-
     private final TicketRepository ticketRepository;
 
     @Override
