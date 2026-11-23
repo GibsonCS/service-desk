@@ -4,14 +4,14 @@
 
 Este diagrama representa as entidades de domínio do sistema, sem dependências de Spring Boot, JPA ou outras tecnologias de infraestrutura.
 
-A linguagem do domínio distingue **User**, **Colaborador** e **Técnico**:
+A linguagem do domínio distingue **User** dos papéis de negócio **Colaborador**, **Técnico** e **Administrador**:
 
-- **User** representa a conta de acesso e autenticação.
-- **Colaborador** representa o usuário do sistema que solicita atendimento e abre chamados.
-- **Técnico** representa o profissional responsável pelo atendimento e resolução dos chamados.
-- **Administrador** representa o usuário com responsabilidades administrativas sobre o sistema.
+- **User** representa exclusivamente a identidade/conta de acesso e autenticação.
+- **Colaborador** é o papel de negócio de um User que solicita atendimento e abre chamados.
+- **Técnico** é o papel de negócio de um User responsável pelo atendimento e resolução dos chamados.
+- **Administrador** é o papel de negócio de um User responsável pela administração do sistema e de suas permissões.
 
-No modelo atual, **Colaborador**, **Técnico** e **Administrador** são papéis desempenhados por um `User`, definidos pelo enum `Role`. Isso evita duplicar a identidade da pessoa no domínio.
+**Colaborador, Técnico e Administrador não são entidades distintas de User.** São papéis atribuídos a um User por meio do enum `Role`. Dessa forma, uma única identidade é utilizada para autenticação e para representar sua atuação no domínio.
 
 ```mermaid
 classDiagram
@@ -84,41 +84,41 @@ classDiagram
         CRITICA
     }
 
-    User --> Role : perfil
+    User --> Role : papel
     Ticket --> TicketStatus : status
     Ticket --> TicketPriority : prioridade
 
     Sector "1" <-- "0..*" User : pertence
-    User "1" <-- "0..*" Ticket : solicitante (colaborador)
+    User "1" <-- "0..*" Ticket : solicitante (User com papel Colaborador)
     Sector "1" <-- "0..*" Ticket : pertence
-    User "0..1" <-- "0..*" Ticket : responsável (técnico)
+    User "0..1" <-- "0..*" Ticket : responsável (User com papel Técnico)
     Ticket "1" <-- "0..*" TicketComment : comentado
     User "1" <-- "0..*" TicketComment : autor
 ```
 
 ### 2. Relacionamentos do domínio
 
-- **User e Role:** um usuário possui um perfil que define seu papel no sistema: colaborador, técnico ou administrador.
-- **User e Sector:** um setor pode possuir vários usuários; cada usuário pertence a um setor.
-- **Ticket e User — solicitante:** cada chamado possui um solicitante, representado por um usuário com papel de colaborador.
-- **Ticket e User — responsável:** cada chamado pode possuir um responsável pelo atendimento, representado por um usuário com papel de técnico. O responsável pode ser nulo até a atribuição.
+- **User e Role:** um User possui um papel que define sua atuação e suas permissões no sistema: Colaborador, Técnico ou Administrador.
+- **User e Sector:** um setor pode possuir vários Users; cada User pertence a um setor.
+- **Ticket e User — solicitante:** cada chamado possui um solicitante. O solicitante é um User cujo papel de negócio é **Colaborador**.
+- **Ticket e User — responsável:** cada chamado pode possuir um responsável pelo atendimento. O responsável é um User cujo papel de negócio é **Técnico**. O responsável pode ser nulo até a atribuição.
 - **Ticket e Sector:** cada chamado pertence a um setor.
-- **TicketComment:** registra os comentários associados a um chamado e o usuário autenticado que os escreveu.
+- **TicketComment:** registra os comentários associados a um chamado e o User autenticado que os escreveu.
 - **Enums:** restringem os valores válidos de papéis, status e prioridades.
 
 ### 3. Linguagem ubíqua
 
 | Termo | Significado no domínio |
 |---|---|
-| **User** | Conta de acesso utilizada para autenticação e identificação do usuário. |
-| **Colaborador** | Usuário que solicita atendimento e abre chamados. |
-| **Técnico** | Usuário responsável pelo atendimento e resolução dos chamados. |
-| **Administrador** | Usuário responsável pela administração do sistema e de suas permissões. |
+| **User** | Identidade/conta de acesso utilizada para autenticação. |
+| **Colaborador** | Papel de negócio de um User que solicita atendimento e abre chamados. |
+| **Técnico** | Papel de negócio de um User responsável pelo atendimento e resolução dos chamados. |
+| **Administrador** | Papel de negócio de um User responsável pela administração do sistema e de suas permissões. |
 | **Solicitante** | Colaborador associado à abertura de um chamado. |
 | **Responsável** | Técnico atualmente atribuído ao atendimento de um chamado. |
 | **Chamado** | Solicitação de atendimento registrada no sistema. |
-| **Atendimento** | Processo de tratamento de um chamado por um técnico. |
+| **Atendimento** | Processo de tratamento de um chamado por um Técnico. |
 
-> Observação: os nomes técnicos dos atributos `requesterId` e `assigneeId` permanecem no código por enquanto. No domínio, seus significados são **solicitante (colaborador)** e **responsável (técnico)**, respectivamente.
+> **Observação:** `requesterId` e `assigneeId` continuam representando referências a `User`. No domínio, seus significados são **Solicitante (Colaborador)** e **Responsável (Técnico)**, respectivamente. Colaborador e Técnico não são entidades separadas de User.
 
-v1.1.0
+v1.2.0
