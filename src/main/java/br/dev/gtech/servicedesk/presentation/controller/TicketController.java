@@ -50,7 +50,7 @@ public class TicketController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("{ticketId}")
+    @GetMapping("/{ticketId}")
     public ResponseEntity<GetTicketDTO> handleGetTicket(@PathVariable UUID ticketId) {
         Ticket ticket = getTicketUseCase.execute(ticketId);
 
