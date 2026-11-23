@@ -7,28 +7,20 @@ import br.dev.gtech.servicedesk.domain.enums.TicketPriority;
 import br.dev.gtech.servicedesk.domain.enums.TicketStatus;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
 
-public class GetTicketDTO {
-    public UUID id;
-    public String title;
-    public String description;
-    public TicketStatus status;
-    public TicketPriority priority;
-    public Instant createdAt;
-
-    public GetTicketDTO(
-            UUID id, String title, String description, TicketStatus status, TicketPriority priority,
-            Instant createdAt
-    ) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.priority = priority;
-        this.createdAt = createdAt;
-    }
-
+public record GetTicketDTO(
+        UUID id,
+        String title,
+        String description,
+        TicketStatus status,
+        TicketPriority priority,
+        UUID requesterId,
+        UUID sectorId,
+        Instant createdAt
+) {
     public static GetTicketDTO toDTO(Ticket ticket) {
-        return new GetTicketDTO(ticket.getId(), ticket.getTitle(), ticket.getDescription(),
-                ticket.getStatus(), ticket.getPriority(), ticket.getCreatedAt());
+        return new GetTicketDTO(
+                ticket.getId(), ticket.getTitle(), ticket.getDescription(), ticket.getStatus(),
+                ticket.getPriority(), ticket.getRequesterId(), ticket.getSectorId(),
+                ticket.getCreatedAt());
     }
 }
