@@ -15,7 +15,9 @@ import br.dev.gtech.servicedesk.application.exception.TicketNotFoundException;
 import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -48,20 +50,29 @@ class GetTicketServiceTest {
     @Test
     @DisplayName("Não deve obter um chamado com id inexistente")
     void shouldNotGetTicketWithNoExistsTicketId() {
-        assertThrows(TicketNotFoundException.class, () ->
+        when(ticketRepositoryPort.findById(TICKET_ID)).thenReturn(Optional.empty());
+
+        var exception = assertThrows(TicketNotFoundException.class, () ->
                 getTicketService.execute(TICKET_ID), "O ID do ticket não existe.");
 
         verify(ticketRepositoryPort, times(1)).findById(TICKET_ID);
+
+        assertEquals("O ID do ticket não existe.", exception.getMessage());
     }
 
     @Test
     @DisplayName("Deve obter um ticket")
     void shouldGetTicket() {
-        when(ticketRepositoryPort.findById(TICKET_ID)).thenReturn(Optional.of(ticket));
+        Ticket expectedTicket = ticket;
 
-        Ticket ticket = getTicketService.execute(TICKET_ID);
+        when(ticketRepositoryPort.findById(TICKET_ID)).thenReturn(Optional.of(expectedTicket));
 
-        assertNotNull(ticket);
+        Ticket foundedTicket = getTicketService.execute(TICKET_ID);
+
+        assertNotNull(foundedTicket);
+
+        assertSame(expectedTicket, foundedTicket);
+
         verify(ticketRepositoryPort, times(1)).findById(TICKET_ID);
     }
 }
