@@ -50,9 +50,9 @@ public class TicketController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<GetTicketDTO> handleGetTicket(@PathVariable UUID id) {
-        Ticket ticket = getTicketUseCase.execute(id);
+    @GetMapping("{ticketId}")
+    public ResponseEntity<GetTicketDTO> handleGetTicket(@PathVariable UUID ticketId) {
+        Ticket ticket = getTicketUseCase.execute(ticketId);
 
         GetTicketDTO getTicketDTO = GetTicketDTO.toDTO(ticket);
 
