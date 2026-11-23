@@ -16,7 +16,6 @@ import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,8 +67,6 @@ class GetTicketServiceTest {
         when(ticketRepositoryPort.findById(TICKET_ID)).thenReturn(Optional.of(expectedTicket));
 
         Ticket foundedTicket = getTicketService.execute(TICKET_ID);
-
-        assertNotNull(foundedTicket);
 
         assertSame(expectedTicket, foundedTicket);
 
