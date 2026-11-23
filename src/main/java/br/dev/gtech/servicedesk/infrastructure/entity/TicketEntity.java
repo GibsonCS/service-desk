@@ -28,6 +28,7 @@ public class TicketEntity {
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TicketPriority priority;
     @Column(name = "requester_id", nullable = false)
     private UUID requesterId;
