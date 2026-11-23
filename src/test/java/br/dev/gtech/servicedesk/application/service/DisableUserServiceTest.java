@@ -29,7 +29,7 @@ class DisableUserServiceTest {
     private final String VALID_NAME = "Gibson";
     private final String VALID_EMAIL = "gibson@example";
     private final String VALID_PASSWORD = "123456";
-    private final Role VALID_ROLE = Role.USER;
+    private final Role VALID_ROLE = Role.COLLABORATOR;
     private final boolean VALID_IS_ACTIVE = true;
     private final Instant VALID_UPDATED_AT = Instant.now();
     private final Instant VALID_CREATED_AT = Instant.now();
