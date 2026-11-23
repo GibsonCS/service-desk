@@ -14,7 +14,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import br.dev.gtech.servicedesk.application.exception.InvalidTickedIdException;
+import br.dev.gtech.servicedesk.application.exception.InvalidTicketIdException;
 import br.dev.gtech.servicedesk.application.exception.TicketNotFoundException;
 import br.dev.gtech.servicedesk.application.exception.TicketPriorityException;
 import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
@@ -62,7 +62,7 @@ class UpdateTicketPriorityUseCaseServiceTest {
     @Test
     @DisplayName("Não deve atualizar prioridade com id do ticket invalido")
     void shouldNotUpdatePriorityWithInvalidTicketId() {
-        assertThrows(InvalidTickedIdException.class, () ->
+        assertThrows(InvalidTicketIdException.class, () ->
                         updateTicketPriorityService.execute(null, TICKET_PRIORITY),
                 "Id do ticket não deve ser vazio");
 

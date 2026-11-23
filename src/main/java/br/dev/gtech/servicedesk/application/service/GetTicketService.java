@@ -2,7 +2,7 @@ package br.dev.gtech.servicedesk.application.service;
 
 import java.util.UUID;
 
-import br.dev.gtech.servicedesk.application.exception.InvalidTickedIdException;
+import br.dev.gtech.servicedesk.application.exception.InvalidTicketIdException;
 import br.dev.gtech.servicedesk.application.exception.TicketNotFoundException;
 import br.dev.gtech.servicedesk.application.port.in.GetTicketUseCase;
 import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
@@ -18,7 +18,7 @@ public class GetTicketService implements GetTicketUseCase {
     @Override
     public Ticket execute(UUID ticketId) {
         if (ticketId == null) {
-            throw new InvalidTickedIdException("O ID do ticket não pode ser nullo.");
+            throw new InvalidTicketIdException("O ID do ticket não pode ser nulo.");
         }
 
         return ticketRepositoryPort.findById(ticketId).orElseThrow(() ->

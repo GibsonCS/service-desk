@@ -3,7 +3,7 @@ package br.dev.gtech.servicedesk.application.service;
 import java.util.Objects;
 import java.util.UUID;
 
-import br.dev.gtech.servicedesk.application.exception.InvalidTickedIdException;
+import br.dev.gtech.servicedesk.application.exception.InvalidTicketIdException;
 import br.dev.gtech.servicedesk.application.exception.TicketNotFoundException;
 import br.dev.gtech.servicedesk.application.exception.TicketPriorityException;
 import br.dev.gtech.servicedesk.application.port.in.UpdateTicketPriorityUseCase;
@@ -21,7 +21,7 @@ public class UpdateTicketPriorityUseCaseService implements UpdateTicketPriorityU
     @Override
     public void execute(UUID ticketId, TicketPriority ticketPriority) {
         if (ticketId == null) {
-            throw new InvalidTickedIdException("Id do ticket não deve ser vazio");
+            throw new InvalidTicketIdException("Id do ticket não deve ser vazio");
         }
 
         Ticket foundedTicket = ticketRepositoryPort.findById(ticketId).orElseThrow(() ->

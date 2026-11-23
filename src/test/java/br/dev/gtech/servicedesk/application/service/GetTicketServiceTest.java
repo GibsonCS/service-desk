@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import br.dev.gtech.servicedesk.application.exception.InvalidTickedIdException;
+import br.dev.gtech.servicedesk.application.exception.InvalidTicketIdException;
 import br.dev.gtech.servicedesk.application.exception.TicketNotFoundException;
 import br.dev.gtech.servicedesk.application.port.out.TicketRepositoryPort;
 import br.dev.gtech.servicedesk.domain.model.Ticket;
@@ -39,7 +39,7 @@ class GetTicketServiceTest {
     @Test
     @DisplayName("Não deve obter um chamado com id nullo")
     void shouldNotGetTicketWithNullId() {
-        assertThrows(InvalidTickedIdException.class, () ->
+        assertThrows(InvalidTicketIdException.class, () ->
                 getTicketService.execute(null), "O ID do ticket não pode ser nulo.");
 
         verify(ticketRepositoryPort, never()).findById(any());
