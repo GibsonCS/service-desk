@@ -2,16 +2,15 @@
 
 ## 1. Modelo de Domínio
 
-Este diagrama representa as entidades de domínio do sistema, sem dependências de Spring Boot, JPA ou outras tecnologias de infraestrutura.
+Este diagrama representa as entidades e conceitos de domínio do sistema, sem dependências de Spring Boot, JPA ou outras tecnologias de infraestrutura.
 
-A linguagem do domínio distingue **User** dos papéis de negócio **Colaborador**, **Técnico** e **Administrador**:
+A linguagem do domínio distingue **User** das entidades de **Gestão de Pessoas**:
 
-- **User** representa exclusivamente a identidade/conta de acesso e autenticação.
-- **Colaborador** é o papel de negócio de um User que solicita atendimento e abre chamados.
-- **Técnico** é o papel de negócio de um User responsável pelo atendimento e resolução dos chamados.
-- **Administrador** é o papel de negócio de um User responsável pela administração do sistema e de suas permissões.
-
-**Colaborador, Técnico e Administrador não são entidades distintas de User.** São papéis atribuídos a um User por meio do enum `Role`. Dessa forma, uma única identidade é utilizada para autenticação e para representar sua atuação no domínio.
+- **User** representa exclusivamente a identidade/conta de acesso, autenticação e autorização.
+- **Colaborador** representa uma pessoa da organização no contexto de Gestão de Pessoas e referencia sua conta de acesso por meio de `userId`.
+- **Técnico** representa um Colaborador habilitado para realizar atendimento e referencia o Colaborador por meio de `colaboradorId`.
+- **Administrador** não é modelado como entidade de Gestão de Pessoas; é uma role de autorização representada por `Role.ADMIN`.
+- **Role** permanece associada a User e é utilizada para autenticação/autorização, não para substituir os conceitos de Colaborador e Técnico.
 
 ```mermaid
 classDiagram
@@ -19,12 +18,29 @@ classDiagram
 
     class User {
         -UUID id
-        -String name
+        -String login
         -String email
         -String passwordHash
-        -Role role
+        -Set~Role~ roles
         -Boolean active
+        -Instant createdAt
+        -Instant updatedAt
+    }
+
+    class Colaborador {
+        -UUID id
+        -UUID userId
+        -String name
+        -String email
         -UUID sectorId
+        -Instant createdAt
+        -Instant updatedAt
+    }
+
+    class Tecnico {
+        -UUID id
+        -UUID colaboradorId
+        -String nivel
         -Instant createdAt
         -Instant updatedAt
     }
@@ -56,7 +72,6 @@ classDiagram
     class TicketComment {
         -UUID id
         -UUID ticketId
-        -UUID authorId
         -String content
         -Instant createdAt
     }
@@ -84,41 +99,79 @@ classDiagram
         CRITICA
     }
 
-    User --> Role : papel
+    User --> Role : roles
+    Colaborador --> User : userId
+    Tecnico --> Colaborador : colaboradorId
+    Colaborador --> Sector : sectorId
     Ticket --> TicketStatus : status
     Ticket --> TicketPriority : prioridade
 
-    Sector "1" <-- "0..*" User : pertence
-    User "1" <-- "0..*" Ticket : solicitante (User com papel Colaborador)
+    Sector "1" <-- "0..*" Colaborador : pertence
+    Colaborador "1" <-- "0..*" Ticket : solicitante
     Sector "1" <-- "0..*" Ticket : pertence
-    User "0..1" <-- "0..*" Ticket : responsável (User com papel Técnico)
+    Tecnico "0..1" <-- "0..*" Ticket : responsável
     Ticket "1" <-- "0..*" TicketComment : comentado
-    User "1" <-- "0..*" TicketComment : autor
 ```
 
 ### 2. Relacionamentos do domínio
 
-- **User e Role:** um User possui um papel que define sua atuação e suas permissões no sistema: Colaborador, Técnico ou Administrador.
-- **User e Sector:** um setor pode possuir vários Users; cada User pertence a um setor.
-- **Ticket e User — solicitante:** cada chamado possui um solicitante. O solicitante é um User cujo papel de negócio é **Colaborador**.
-- **Ticket e User — responsável:** cada chamado pode possuir um responsável pelo atendimento. O responsável é um User cujo papel de negócio é **Técnico**. O responsável pode ser nulo até a atribuição.
+- **User e Role:** um User pode possuir uma ou mais roles de autorização. As roles determinam quais funcionalidades o User pode acessar.
+- **Colaborador e User:** um Colaborador referencia uma conta de acesso por meio de `userId`. O identificador do Colaborador é próprio e não precisa ser igual ao identificador do User.
+- **Técnico e Colaborador:** um Técnico referencia um Colaborador por meio de `colaboradorId`. Assim, Técnico representa uma capacidade/função de atendimento de um Colaborador sem transformar `TECHNICIAN` em sua identidade de domínio.
+- **Colaborador e Sector:** um Colaborador pertence a um setor da organização.
+- **Ticket e Colaborador — solicitante:** cada chamado possui um solicitante, representado pelo `requesterId`, que referencia o identificador do Colaborador.
+- **Ticket e Técnico — responsável:** cada chamado pode possuir um responsável, representado pelo `assigneeId`, que referencia o identificador do Técnico. O responsável pode ser nulo até a atribuição.
 - **Ticket e Sector:** cada chamado pertence a um setor.
-- **TicketComment:** registra os comentários associados a um chamado e o User autenticado que os escreveu.
-- **Enums:** restringem os valores válidos de papéis, status e prioridades.
+- **TicketComment:** registra os comentários associados a um chamado. O autor pode ser associado ao User autenticado no modelo de persistência/aplicação, sem transformar User em entidade responsável pelo domínio do chamado.
+- **Enums:** restringem os valores válidos de roles, status e prioridades.
 
-### 3. Linguagem ubíqua
+### 3. Contextos conceituais
+
+O modelo pode ser organizado conceitualmente em três áreas:
+
+| Contexto conceitual | Principais conceitos |
+|---|---|
+| **Identidade e Acesso** | User, Role |
+| **Gestão de Pessoas e Organização** | Colaborador, Técnico, Sector |
+| **Gestão de Chamados** | Ticket, TicketComment, TicketStatus, TicketPriority |
+
+> **Observação:** esses agrupamentos representam limites conceituais do modelo. Eles não implicam, por si só, que cada grupo precise ser implementado como um Bounded Context ou módulo independente.
+
+### 4. Linguagem ubíqua
 
 | Termo | Significado no domínio |
 |---|---|
-| **User** | Identidade/conta de acesso utilizada para autenticação. |
-| **Colaborador** | Papel de negócio de um User que solicita atendimento e abre chamados. |
-| **Técnico** | Papel de negócio de um User responsável pelo atendimento e resolução dos chamados. |
-| **Administrador** | Papel de negócio de um User responsável pela administração do sistema e de suas permissões. |
+| **User** | Identidade/conta de acesso utilizada para autenticação e autorização. |
+| **Role** | Enum de autorização associado ao User. Define permissões de acesso às funcionalidades do sistema. |
+| **Colaborador** | Pessoa da organização representada no contexto de Gestão de Pessoas. Possui referência para um User por meio de `userId`. |
+| **Técnico** | Colaborador habilitado para realizar atendimento. Possui referência para Colaborador por meio de `colaboradorId`. |
+| **Administrador** | Papel de autorização representado por `Role.ADMIN`; não é uma entidade de Gestão de Pessoas. |
 | **Solicitante** | Colaborador associado à abertura de um chamado. |
 | **Responsável** | Técnico atualmente atribuído ao atendimento de um chamado. |
 | **Chamado** | Solicitação de atendimento registrada no sistema. |
 | **Atendimento** | Processo de tratamento de um chamado por um Técnico. |
 
-> **Observação:** `requesterId` e `assigneeId` continuam representando referências a `User`. No domínio, seus significados são **Solicitante (Colaborador)** e **Responsável (Técnico)**, respectivamente. Colaborador e Técnico não são entidades separadas de User.
+### 5. Decisão de modelagem
 
-v1.2.0
+O modelo **não compartilha o mesmo ID entre User e Colaborador**.
+
+A identidade de acesso é independente da identidade de negócio:
+
+`Colaborador.userId -> User.id`
+
+Da mesma forma, Técnico possui sua própria identidade:
+
+`Tecnico.colaboradorId -> Colaborador.id`
+
+Essa decisão mantém separados os conceitos de identidade, autorização e domínio. Também permite que um User exista sem necessariamente representar um Colaborador ou Técnico.
+
+### 6. Implicações para o domínio de chamados
+
+As referências do `Ticket` devem utilizar os identificadores dos conceitos de negócio que representam os participantes do atendimento:
+
+- `requesterId -> Colaborador.id`
+- `assigneeId -> Tecnico.id`
+
+A autorização de acesso à operação continua sendo responsabilidade de `User.roles`.
+
+v1.3.0
