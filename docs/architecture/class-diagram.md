@@ -119,7 +119,8 @@ classDiagram
 - **Colaborador e User:** um Colaborador referencia uma conta de acesso por meio de `userId`. O identificador do Colaborador é próprio e não precisa ser igual ao identificador do User.
 - **Técnico e Colaborador:** um Técnico referencia um Colaborador por meio de `colaboradorId`. Assim, Técnico representa uma capacidade/função de atendimento de um Colaborador sem transformar `TECHNICIAN` em sua identidade de domínio.
 - **Colaborador e Sector:** um Colaborador pertence a um setor da organização.
-- **Ticket e Colaborador — solicitante:** cada chamado possui um solicitante, representado pelo `requesterId`, que referencia o identificador do Colaborador.
+- **Ticket e Colaborador — solicitante:** cada chamado possui um solicitante, representado pelo `requesterId`, que referencia exclusivamente `Colaborador.id`, nunca `User.id`.
+- **Resolução do solicitante na abertura:** em uma operação autenticada, a aplicação obtém o `User.id` da identidade autenticada, localiza o Colaborador por `Colaborador.userId` e utiliza `Colaborador.id` para preencher `Ticket.requesterId`. O cliente não deve escolher livremente o solicitante.
 - **Ticket e Técnico — responsável:** cada chamado pode possuir um responsável, representado pelo `assigneeId`, que referencia o identificador do Técnico. O responsável pode ser nulo até a atribuição.
 - **Ticket e Sector:** cada chamado pertence a um setor.
 - **TicketComment:** registra os comentários associados a um chamado. O autor pode ser associado ao User autenticado no modelo de persistência/aplicação, sem transformar User em entidade responsável pelo domínio do chamado.
@@ -169,9 +170,11 @@ Essa decisão mantém separados os conceitos de identidade, autorização e dom�
 
 As referências do `Ticket` devem utilizar os identificadores dos conceitos de negócio que representam os participantes do atendimento:
 
-- `requesterId -> Colaborador.id`
+- `requesterId -> Colaborador.id` (não `User.id`)
 - `assigneeId -> Tecnico.id`
+
+Na abertura autenticada, o fluxo de resolução é `User autenticado.id -> Colaborador.userId -> Colaborador.id -> Ticket.requesterId`. Assim, User é a origem da identidade autenticada, enquanto Colaborador é o solicitante no domínio de chamados.
 
 A autorização de acesso à operação continua sendo responsabilidade de `User.roles`.
 
-v1.3.0
+v1.4.0
