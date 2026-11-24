@@ -12,16 +12,16 @@ O sistema adota os seguintes termos de domínio:
 
 | Termo | Definição |
 |---|---|
-| **User** | Conta de acesso e identidade utilizada para autenticação no sistema. |
-| **Colaborador** | Papel de negócio desempenhado por um User que solicita atendimento e abre chamados. |
-| **Técnico** | Papel de negócio desempenhado por um User responsável pelo atendimento e resolução dos chamados. |
-| **Administrador** | Papel de negócio desempenhado por um User responsável pela administração do sistema e de suas permissões. |
+| **User** | Conta de acesso e identidade utilizada para autenticação e autorização no sistema. |
+| **Colaborador** | Entidade do contexto de Gestão de Pessoas que representa uma pessoa da organização que pode solicitar atendimento. Um Colaborador possui uma referência para a conta de acesso por meio de `userId`. |
+| **Técnico** | Entidade do contexto de Gestão de Pessoas que representa um Colaborador habilitado para realizar atendimento e resolução de chamados. Um Técnico referencia um Colaborador por meio de `colaboradorId`. |
+| **Administrador** | Papel de acesso representado por `Role.ADMIN`, responsável por operações administrativas do sistema. Não é necessário modelá-lo como uma entidade de Gestão de Pessoas. |
 | **Solicitante** | Colaborador associado à abertura de um chamado. |
 | **Responsável** | Técnico atualmente atribuído ao atendimento de um chamado. |
 | **Chamado** | Solicitação de atendimento registrada no sistema. |
 | **Atendimento** | Processo de tratamento de um chamado por um Técnico. |
 
-**Importante:** User representa somente a identidade/conta de acesso. User não representa, por si só, o papel de quem abre ou resolve chamados. As responsabilidades de negócio são definidas pelo papel atribuído ao User: **Colaborador**, **Técnico** ou **Administrador**.
+**Importante:** User representa a identidade/conta de acesso. Colaborador e Técnico representam conceitos do domínio de Gestão de Pessoas e não são apenas valores de `Role`. O vínculo entre identidade e pessoa é explícito por meio de `userId` e `colaboradorId`. As roles permanecem em User para fins de autenticação e autorização.
 
 ## 3. Domínio do Sistema
 
@@ -31,19 +31,19 @@ O domínio central é responsável pelo ciclo de vida dos chamados e pelo atendi
 
 ### 3.2. Domínios de Suporte
 
-- **Identidade e acesso:** autenticação, dados cadastrais e papéis de acesso dos Users.
-- **Organização da operação:** setores e associação de Users aos setores.
+- **Identidade e Acesso:** autenticação, credenciais, contas de acesso e papéis de autorização dos Users.
+- **Gestão de Pessoas/Organização:** Colaboradores, Técnicos e setores.
 - **Indicadores e relatórios:** consolidação e consulta de informações operacionais.
 
 ## 4. Atores do Sistema
 
 | Ator | Descrição |
 |---|---|
-| **Colaborador** | User autenticado com papel de Colaborador, responsável por abrir e acompanhar suas próprias solicitações. |
-| **Técnico** | User autenticado com papel de Técnico, responsável por receber, atender e resolver chamados. |
-| **Administrador** | User autenticado com papel de Administrador, responsável por administrar Users, setores, papéis e funcionalidades administrativas. |
+| **Colaborador** | Pessoa da organização vinculada a um User autenticado e autorizada a abrir e acompanhar suas próprias solicitações. |
+| **Técnico** | Colaborador habilitado para atendimento e vinculado a um User autenticado com as permissões necessárias para executar operações técnicas. |
+| **Administrador** | User autenticado com a role `ADMIN`, responsável por administrar Users, setores, permissões e funcionalidades administrativas. |
 
-> **Nota:** User não é tratado como ator de negócio. User representa a identidade autenticada; os comportamentos de negócio são exercidos pelos papéis atribuídos a essa identidade.
+> **Nota:** User não é ator de negócio. User representa a identidade autenticada. Colaborador e Técnico são conceitos do domínio; as roles do User determinam as permissões de acesso às funcionalidades.
 
 ## 5. Requisitos Funcionais
 
@@ -149,7 +149,7 @@ O sistema deverá calcular o tempo de solução dos chamados concluídos, consid
 
 **RF21 — Cadastrar conta de acesso**
 
-O sistema deverá permitir o cadastro de uma conta de acesso (`User`) com nome, endereço de e-mail e senha.
+O sistema deverá permitir o cadastro de uma conta de acesso (`User`) com login, endereço de e-mail, senha e roles de autorização, conforme as regras do sistema.
 
 **RF22 — Consultar conta de acesso**
 
@@ -157,7 +157,7 @@ O sistema deverá permitir a consulta dos dados de uma conta de acesso, respeita
 
 **RF23 — Atualizar conta de acesso**
 
-O sistema deverá permitir a atualização dos dados cadastrais de uma conta de acesso autorizada, como nome, e-mail e senha.
+O sistema deverá permitir a atualização dos dados cadastrais de uma conta de acesso autorizada, como login, e-mail e senha.
 
 **RF24 — Desativar conta de acesso**
 
@@ -165,45 +165,61 @@ O sistema deverá permitir que um **Administrador** desative contas de acesso se
 
 **RF25 — Autenticar User**
 
-O sistema deverá autenticar a conta de acesso (`User`) por meio de suas credenciais e disponibilizar acesso às funcionalidades autorizadas para o papel atribuído.
+O sistema deverá autenticar a conta de acesso (`User`) por meio de suas credenciais e disponibilizar acesso às funcionalidades conforme as roles atribuídas.
 
-**RF26 — Gerenciar papéis de acesso**
+**RF26 — Gerenciar roles de acesso**
 
-O sistema deverá permitir que **Administradores** atribuam e alterem os papéis de acesso entre **Colaborador**, **Técnico** e **Administrador**, conforme as regras de autorização.
+O sistema deverá permitir que **Administradores** atribuam e alterem as roles de acesso de um User entre `COLLABORATOR`, `TECHNICIAN` e `ADMIN`, conforme as regras de autorização.
 
 **RF27 — Consultar próprio perfil**
 
-O sistema deverá permitir que o User autenticado consulte seus próprios dados cadastrais e seu papel de acesso.
+O sistema deverá permitir que o User autenticado consulte seus próprios dados cadastrais e suas roles de acesso.
 
-### 5.5. Domínio de Suporte — Organização da Operação
+### 5.5. Domínio de Suporte — Gestão de Pessoas e Organização
 
-**RF28 — Cadastrar setor**
+**RF28 — Cadastrar Colaborador**
+
+O sistema deverá permitir o cadastro de um **Colaborador**, vinculando-o a uma conta de acesso (`User`) por meio de `userId`.
+
+**RF29 — Consultar Colaborador**
+
+O sistema deverá permitir a consulta dos dados de um **Colaborador** de acordo com as permissões aplicáveis.
+
+**RF30 — Atualizar Colaborador**
+
+O sistema deverá permitir a atualização dos dados cadastrais de um **Colaborador**, preservando sua referência à conta de acesso.
+
+**RF31 — Cadastrar Técnico**
+
+O sistema deverá permitir o cadastro de um **Técnico** a partir de um Colaborador habilitado para realizar atendimento, estabelecendo a referência por meio de `colaboradorId`.
+
+**RF32 — Consultar e atualizar Técnico**
+
+O sistema deverá permitir a consulta e atualização dos dados específicos de um **Técnico**, como seu nível de atendimento, de acordo com as permissões aplicáveis.
+
+**RF33 — Cadastrar setor**
 
 O sistema deverá permitir o cadastro de setores responsáveis pelo recebimento e atendimento de chamados.
 
-**RF29 — Consultar setores**
+**RF34 — Consultar setores**
 
 O sistema deverá permitir a consulta dos setores cadastrados.
 
-**RF30 — Atualizar e desativar setor**
+**RF35 — Atualizar e desativar setor**
 
 O sistema deverá permitir que Administradores atualizem e desativem setores, preservando os registros históricos relacionados.
 
-**RF31 — Associar Users a setores**
-
-O sistema deverá permitir a associação de contas de acesso (`User`) a setores, conforme suas permissões e responsabilidades.
-
 ### 5.6. Domínio de Suporte — Indicadores e Relatórios
 
-**RF32 — Consultar indicadores de chamados**
+**RF36 — Consultar indicadores de chamados**
 
 O sistema deverá disponibilizar indicadores quantitativos de chamados, permitindo sua análise por status, prioridade e setor.
 
-**RF33 — Consultar indicadores por Técnico**
+**RF37 — Consultar indicadores por Técnico**
 
 O sistema deverá permitir a consulta de indicadores relacionados aos **Técnicos** responsáveis pelo atendimento.
 
-**RF34 — Consultar tempo médio de solução**
+**RF38 — Consultar tempo médio de solução**
 
 O sistema deverá disponibilizar o tempo médio de solução dos chamados concluídos, conforme os filtros e critérios definidos.
 
@@ -211,11 +227,11 @@ O sistema deverá disponibilizar o tempo médio de solução dos chamados conclu
 
 **RG01 — Autenticação e autorização**
 
-As funcionalidades deverão ser acessíveis somente após autenticação, respeitando o papel e as permissões do User autenticado.
+As funcionalidades deverão ser acessíveis somente após autenticação, respeitando as roles e permissões do User autenticado.
 
-**RG02 — Separação entre identidade e papel de negócio**
+**RG02 — Separação entre identidade, autorização e domínio**
 
-User representa exclusivamente a identidade/conta de acesso. As responsabilidades de negócio são exercidas pelos papéis **Colaborador**, **Técnico** e **Administrador** atribuídos ao User.
+User representa a identidade/conta de acesso e suas roles de autorização. Colaborador e Técnico representam entidades do domínio de Gestão de Pessoas e possuem referências explícitas à identidade por meio de `userId` e `colaboradorId`.
 
 **RG03 — Integridade do ciclo de vida**
 
@@ -233,14 +249,19 @@ A desativação de uma conta de acesso ou de um setor não deverá apagar os reg
 
 As datas de abertura, início do atendimento, conclusão e demais eventos relevantes deverão ser registradas de forma consistente e permitir o cálculo do tempo de solução.
 
+**RG07 — Consistência entre identidade e pessoa**
+
+Um Colaborador deverá possuir uma referência válida para um User. Um Técnico deverá possuir uma referência válida para um Colaborador. A existência de um User não implica, por si só, a existência de um Colaborador ou Técnico.
+
 ## 7. Considerações sobre evolução
 
 1. As regras de autenticação e autorização deverão ser aplicadas no backend, independentemente das restrições existentes na interface.
 2. As regras de negócio do atendimento deverão permanecer independentes da infraestrutura de autenticação e persistência.
-3. O domínio deverá expressar explicitamente as responsabilidades de **Colaborador** e **Técnico**, evitando o uso genérico de "User" para representar comportamentos de negócio.
-4. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento, regras de horário comercial, dias úteis e feriados.
-5. Os requisitos poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
+3. O domínio deverá expressar explicitamente as responsabilidades de **Colaborador** e **Técnico**, evitando o uso de `User` como substituto desses conceitos.
+4. As roles de `User` deverão permanecer relacionadas à autorização de acesso, não sendo utilizadas como substitutas das entidades de domínio **Colaborador** e **Técnico**.
+5. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento, regras de horário comercial, dias úteis e feriados.
+6. Os requisitos poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
 
 ___
 
-#### *v2.2.0*
+#### *v2.3.0*
