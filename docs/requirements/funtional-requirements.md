@@ -51,7 +51,7 @@ O domínio central é responsável pelo ciclo de vida dos chamados e pelo atendi
 
 **RF01 — Abrir chamado**
 
-O sistema deverá permitir que um **Colaborador** autenticado registre um chamado informando, no mínimo, título, descrição e setor responsável.
+O sistema deverá permitir que um **Colaborador** registre um chamado informando, no mínimo, título, descrição e setor responsável. A identidade do Colaborador deverá ser obtida a partir da conta (`User`) autenticada, não sendo permitido ao cliente definir livremente o solicitante.
 
 **RF02 — Identificar chamado**
 
@@ -59,7 +59,7 @@ O sistema deverá gerar um identificador único para cada chamado registrado.
 
 **RF03 — Registrar solicitante**
 
-O sistema deverá associar cada chamado ao **Colaborador** que realizou sua abertura, identificado no domínio como seu **Solicitante**.
+O sistema deverá associar cada chamado ao **Colaborador** que realizou sua abertura, identificado no domínio como seu **Solicitante**. O atributo `Ticket.requesterId` deverá armazenar o identificador próprio do Colaborador (`Colaborador.id`), e não o identificador da conta de acesso (`User.id`). Para isso, a aplicação deverá resolver o Colaborador associado ao User autenticado por meio de `Colaborador.userId`.
 
 **RF04 — Definir prioridade**
 
@@ -253,15 +253,21 @@ As datas de abertura, início do atendimento, conclusão e demais eventos releva
 
 Um Colaborador deverá possuir uma referência válida para um User. Um Técnico deverá possuir uma referência válida para um Colaborador. A existência de um User não implica, por si só, a existência de um Colaborador ou Técnico.
 
+**RG08 — Identificação do solicitante**
+
+O `requesterId` de um Ticket deverá referenciar exclusivamente `Colaborador.id`. Quando a abertura do chamado ocorrer por um User autenticado, a aplicação deverá localizar o Colaborador associado por `userId` e utilizar seu identificador como solicitante. O identificador do solicitante não deverá ser aceito como dado livremente definido pelo cliente em operações autenticadas.
+
 ## 7. Considerações sobre evolução
 
 1. As regras de autenticação e autorização deverão ser aplicadas no backend, independentemente das restrições existentes na interface.
 2. As regras de negócio do atendimento deverão permanecer independentes da infraestrutura de autenticação e persistência.
 3. O domínio deverá expressar explicitamente as responsabilidades de **Colaborador** e **Técnico**, evitando o uso de `User` como substituto desses conceitos.
-4. As roles de `User` deverão permanecer relacionadas à autorização de acesso, não sendo utilizadas como substitutas das entidades de domínio **Colaborador** e **Técnico**.
-5. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento, regras de horário comercial, dias úteis e feriados.
-6. Os requisitos poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
+4. O `Ticket.requesterId` deverá referenciar `Colaborador.id`; a identidade autenticada (`User.id`) deverá ser utilizada apenas para localizar o Colaborador associado por `userId`.
+5. O identificador do solicitante deverá ser derivado da identidade autenticada no backend, evitando confiar em um `requesterId` arbitrário enviado pelo cliente.
+6. As roles de `User` deverão permanecer relacionadas à autorização de acesso, não sendo utilizadas como substitutas das entidades de domínio **Colaborador** e **Técnico**.
+7. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento, regras de horário comercial, dias úteis e feriados.
+8. Os requisitos poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
 
 ___
 
-#### *v2.3.0*
+#### *v2.4.0*
