@@ -63,6 +63,35 @@ A especificação dos requisitos permanece em `docs/requirements/funtional-requi
 - [ ] RF32 — Consultar indicadores por User responsável
 - [ ] RF33 — Consultar tempo médio de solução
 
+## Como interpretar o status
+
+O status acompanha a **implementação incremental** dos RFs. Um RF pode estar marcado como parcialmente implementado quando a funcionalidade principal já existe, mas ainda depende de regras ou infraestrutura que serão implementadas posteriormente.
+
+A ordem de implementação não exige que todos os RFs sejam concluídos antes das RN/RG. A abordagem adotada é:
+
+1. implementar o RF;
+2. aplicar as regras de domínio já conhecidas e necessárias;
+3. criar/ajustar os testes;
+4. refatorar;
+5. registrar regras dependentes de funcionalidades futuras como pendências;
+6. quando uma funcionalidade de suporte, como autenticação, for implementada, retornar aos RFs afetados e fechar as regras pendentes.
+
+### Pendências de regras por requisito
+
+#### RF01 / RF03 — Solicitante
+
+- [x] Criar e registrar o chamado com um solicitante.
+- [x] Persistir `requesterId` como referência a `User.id`.
+- [ ] Após a implementação da autenticação, derivar o solicitante da identidade autenticada.
+- [ ] Remover o `requesterId` arbitrário do payload de abertura em operações autenticadas.
+
+#### RF08 / RF10 / RF11 — Autorização do atendimento
+
+- [ ] Implementar autenticação.
+- [ ] Implementar autorização por `Role`.
+- [ ] Aplicar autorização de `TECHNICIAN`/`ADMIN` nas operações de atendimento.
+- [ ] Manter as invariantes do ciclo de vida no domínio, sem acoplar `Ticket` a `User` ou `Role`.
+
 ## Próxima implementação recomendada
 
 **RF10 — Iniciar atendimento**
@@ -71,6 +100,8 @@ A implementação deve começar pela regra de domínio da transição:
 
 `PENDENTE -> EM_ATENDIMENTO`
 
-e pelos testes das transições válidas e inválidas. A autorização baseada em `Role.TECHNICIAN` ou `Role.ADMIN` deve permanecer na camada de aplicação/autorização, sem acoplar o agregado `Ticket` à entidade `User` ou à enum `Role`.
+e pelos testes das transições válidas e inválidas. Neste momento, a regra de autorização por `Role.TECHNICIAN` ou `Role.ADMIN` pode ser registrada como pendência, pois depende da autenticação/autorização ainda não implementada.
 
-#### *v1.0.0*
+Quando a autenticação estiver disponível, os RFs afetados deverão ser revisados para fechar essas regras sem alterar desnecessariamente a definição funcional original.
+
+#### *v1.1.0*
