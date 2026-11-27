@@ -53,7 +53,7 @@ O domínio central é responsável pelo ciclo de vida dos chamados e pelo atendi
 
 **RF01 — Abrir chamado**
 
-O sistema deverá permitir que um **User** registre um chamado informando, no mínimo, título, descrição e setor responsável. Em uma operação autenticada, a identidade do solicitante deverá ser obtida a partir do User autenticado, não sendo permitido ao cliente definir livremente outro solicitante.
+O sistema deverá permitir que um **User** registre um chamado informando, no mínimo, título, descrição e setor responsável.
 
 **RF02 — Identificar chamado**
 
@@ -76,11 +76,11 @@ O sistema deverá permitir a classificação dos chamados conforme os níveis de
 
 **RF05 — Consultar chamado**
 
-O sistema deverá permitir a consulta dos dados de um chamado de acordo com as permissões do User autenticado.
+O sistema deverá permitir a consulta dos dados de um chamado.
 
 **RF06 — Atualizar dados do chamado**
 
-O sistema deverá permitir a atualização dos dados de um chamado por Users autorizados, respeitando as restrições aplicáveis ao seu estado atual.
+O sistema deverá permitir a atualização dos dados de um chamado, respeitando as restrições aplicáveis ao seu estado atual.
 
 **RF07 — Consultar chamados por critérios**
 
@@ -95,7 +95,7 @@ O sistema deverá permitir a filtragem de chamados pelos seguintes critérios:
 
 **RF08 — Atribuir responsável**
 
-O sistema deverá permitir que Users autorizados atribuam um **User** como responsável pelo atendimento de um chamado. A atribuição deverá respeitar as regras de autorização aplicáveis, incluindo a role `TECHNICIAN` quando exigida pela operação.
+O sistema deverá permitir a atribuição de um **User** como responsável pelo atendimento de um chamado.
 
 **RF09 — Alterar responsável**
 
@@ -103,33 +103,33 @@ O sistema deverá permitir a alteração do User responsável pelo atendimento d
 
 **RF10 — Iniciar atendimento**
 
-O sistema deverá permitir que um User autorizado, de acordo com sua role, inicie o atendimento de um chamado pendente.
+O sistema deverá permitir o início do atendimento de um chamado pendente.
 
 **RF11 — Concluir chamado**
 
-O sistema deverá permitir que um User autorizado, de acordo com sua role, registre a conclusão de um chamado em atendimento.
+O sistema deverá permitir o registro da conclusão de um chamado em atendimento.
 
 **RF12 — Reabrir chamado**
 
-O sistema deverá permitir a reabertura de chamados concluídos, mediante autorização, para que retornem ao atendimento.
+O sistema deverá permitir a reabertura de chamados concluídos para que retornem ao atendimento.
 
 **RF13 — Cancelar chamado**
 
-O sistema deverá permitir o cancelamento de chamados por Users autorizados, respeitando as regras de negócio aplicáveis.
+O sistema deverá permitir o cancelamento de chamados, respeitando as regras de negócio aplicáveis.
 
 ### 5.2. Comentários e Histórico
 
 **RF14 — Adicionar comentário**
 
-O sistema deverá permitir que Users autorizados adicionem comentários a um chamado.
+O sistema deverá permitir a adição de comentários a um chamado.
 
 **RF15 — Consultar comentários**
 
-O sistema deverá permitir a consulta dos comentários de um chamado, respeitando as permissões de acesso.
+O sistema deverá permitir a consulta dos comentários de um chamado.
 
 **RF16 — Consultar histórico**
 
-O sistema deverá permitir a consulta do histórico de um chamado por Users autorizados.
+O sistema deverá permitir a consulta do histórico de um chamado.
 
 ### 5.3. Controle de Tempo de Atendimento
 
@@ -157,15 +157,15 @@ O sistema deverá permitir o cadastro de um User com nome, endereço de e-mail, 
 
 **RF22 — Consultar User**
 
-O sistema deverá permitir a consulta dos dados de um User, respeitando as permissões aplicáveis.
+O sistema deverá permitir a consulta dos dados de um User.
 
 **RF23 — Atualizar User**
 
-O sistema deverá permitir a atualização dos dados cadastrais de um User autorizado, como nome, e-mail e senha. Alterações no e-mail deverão respeitar sua utilização como login e sua unicidade.
+O sistema deverá permitir a atualização dos dados cadastrais de um User, como nome, e-mail e senha. Alterações no e-mail deverão respeitar sua utilização como login e sua unicidade.
 
 **RF24 — Desativar User**
 
-O sistema deverá permitir que um **Administrador** desative Users sem excluir seus registros históricos.
+O sistema deverá permitir a desativação de Users sem excluir seus registros históricos.
 
 **RF25 — Autenticar User**
 
@@ -173,11 +173,11 @@ O sistema deverá autenticar o User por meio do e-mail e senha e disponibilizar 
 
 **RF26 — Gerenciar role de acesso**
 
-O sistema deverá permitir que **Administradores** atribuam e alterem a role de um User entre `COLLABORATOR`, `TECHNICIAN` e `ADMIN`, conforme as regras de autorização.
+O sistema deverá permitir a atribuição e alteração da role de um User entre `COLLABORATOR`, `TECHNICIAN` e `ADMIN`.
 
 **RF27 — Consultar próprio perfil**
 
-O sistema deverá permitir que o User autenticado consulte seus próprios dados cadastrais e sua role de acesso.
+O sistema deverá permitir que um User consulte seus próprios dados cadastrais e sua role de acesso.
 
 ### 5.5. Domínio de Suporte — Gestão de Organização
 
@@ -191,7 +191,7 @@ O sistema deverá permitir a consulta dos setores cadastrados.
 
 **RF30 — Atualizar e desativar setor**
 
-O sistema deverá permitir que Administradores atualizem e desativem setores, preservando os registros históricos relacionados.
+O sistema deverá permitir a atualização e desativação de setores, preservando os registros históricos relacionados.
 
 ### 5.6. Domínio de Suporte — Indicadores e Relatórios
 
@@ -249,19 +249,27 @@ O setor ao qual um User pertence (`User.sectorId`) representa seu vínculo organ
 
 Cada User possui uma única role de autorização. A role determina o conjunto de permissões aplicável ao User.
 
-## 7. Considerações sobre evolução
+## 7. Regras, refinamento e evolução da implementação
 
-1. As regras de autenticação e autorização deverão ser aplicadas no backend, independentemente das restrições existentes na interface.
-2. As regras de negócio do atendimento deverão permanecer independentes da infraestrutura de autenticação e persistência.
-3. User concentra, no contexto do Service Desk, a identidade de acesso e os dados necessários para sua participação na organização.
-4. `Ticket.requesterId` e `Ticket.assigneeId` deverão referenciar `User.id`.
-5. O identificador do solicitante deverá ser derivado da identidade autenticada no backend, evitando confiar em um `requesterId` arbitrário enviado pelo cliente em operações autenticadas.
-6. A role `TECHNICIAN` representa autorização para executar operações técnicas; não é necessário modelar uma entidade Técnico enquanto não houver atributos ou comportamentos de domínio próprios que justifiquem essa entidade.
-7. A role `ADMIN` representa autorização administrativa e não é uma entidade de domínio.
-8. O e-mail do User é utilizado como login e deve permanecer único.
-9. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento, regras de horário comercial, dias úteis e feriados.
-10. Os requisitos poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
+Os Requisitos Funcionais descrevem **o que o sistema deve fazer**. As Regras de Negócio e Regras Gerais refinam essas funcionalidades com restrições, invariantes e critérios de segurança/autorização.
+
+A implementação seguirá uma abordagem incremental:
+
+1. Cada RF poderá ser implementado acompanhado das regras de domínio já conhecidas e necessárias para seu funcionamento correto.
+2. Regras que dependem de funcionalidades ainda não implementadas, como autenticação, poderão permanecer pendentes e ser incorporadas posteriormente.
+3. Quando uma funcionalidade de suporte for implementada, os RFs que dependem dela deverão ser revisados para incorporar as regras correspondentes.
+4. A implementação de uma funcionalidade não implica que todas as suas regras futuras estejam concluídas; o status detalhado fica registrado em `docs/requirements/implementation-status.md`.
+5. As regras de negócio do atendimento deverão permanecer independentes da infraestrutura de autenticação e persistência sempre que possível.
+6. Regras de segurança e autorização deverão ser aplicadas no backend, independentemente das restrições existentes na interface.
+7. User concentra, no contexto do Service Desk, a identidade de acesso e os dados necessários para sua participação na organização.
+8. `Ticket.requesterId` e `Ticket.assigneeId` deverão referenciar `User.id`.
+9. Em operações autenticadas, o identificador do solicitante deverá ser derivado da identidade autenticada no backend, evitando confiar em um `requesterId` arbitrário enviado pelo cliente.
+10. A role `TECHNICIAN` representa autorização para executar operações técnicas; não é necessário modelar uma entidade Técnico enquanto não houver atributos ou comportamentos de domínio próprios que justifiquem essa entidade.
+11. A role `ADMIN` representa autorização administrativa e não é uma entidade de domínio.
+12. O e-mail do User é utilizado como login e deve permanecer único.
+13. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento, regras de horário comercial, dias úteis e feriados.
+14. Os requisitos e regras poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
 
 ___
 
-#### *v2.5.0*
+#### *v2.6.0*
