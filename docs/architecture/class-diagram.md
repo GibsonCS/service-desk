@@ -14,13 +14,14 @@ classDiagram
 
     class User {
         -UUID id
-        -String login
-        -String passwordHash
+        -String name
+        -String email
+        -String hashPassword
         -Role
-        -Boolean active
-        -UUID sectorId
+        -boolean isActive
         -Instant createdAt
         -Instant updatedAt
+        -UUID sectorId
     }
 
     class Sector {
@@ -123,4 +124,4 @@ O modelo pode ser organizado conceitualmente em três áreas:
 | **Assignee**      | User com role de técnico atualmente atribuído ao atendimento de um chamado.                                               |
 | **Ticket**        | Solicitação de atendimento registrada no sistema.                                                                         |
 
-v2.5.0
+v2.5.1
