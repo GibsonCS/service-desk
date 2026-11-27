@@ -12,38 +12,40 @@ O sistema adota os seguintes termos de domínio:
 
 | Termo | Definição |
 |---|---|
-| **User** | Conta de acesso e identidade utilizada para autenticação e autorização no sistema. |
-| **Colaborador** | Entidade do contexto de Gestão de Pessoas que representa uma pessoa da organização que pode solicitar atendimento. Um Colaborador possui uma referência para a conta de acesso por meio de `userId`. |
-| **Técnico** | Entidade do contexto de Gestão de Pessoas que representa um Colaborador habilitado para realizar atendimento e resolução de chamados. Um Técnico referencia um Colaborador por meio de `colaboradorId`. |
-| **Administrador** | Papel de acesso representado por `Role.ADMIN`, responsável por operações administrativas do sistema. Não é necessário modelá-lo como uma entidade de Gestão de Pessoas. |
-| **Solicitante** | Colaborador associado à abertura de um chamado. |
-| **Responsável** | Técnico atualmente atribuído ao atendimento de um chamado. |
-| **Chamado** | Solicitação de atendimento registrada no sistema. |
-| **Atendimento** | Processo de tratamento de um chamado por um Técnico. |
+| **User** | Pessoa/conta de acesso utilizada para autenticação, autorização e participação nas operações do sistema. O User também representa o colaborador no contexto do Service Desk. |
+| **Role** | Enum de autorização associado ao User. Define as permissões de acesso às funcionalidades do sistema. |
+| **Administrador** | Papel de autorização representado por `Role.ADMIN`, responsável por operações administrativas do sistema. Não é uma entidade separada. |
+| **Solicitante (Requester)** | User associado à abertura de um chamado. |
+| **Responsável (Assignee)** | User atualmente atribuído ao atendimento de um chamado. A atribuição é permitida conforme as roles de autorização definidas pelo sistema. |
+| **Chamado (Ticket)** | Solicitação de atendimento registrada no sistema. |
+| **Atendimento** | Processo de tratamento de um chamado por um User autorizado a executar operações técnicas. |
+| **Setor (Sector)** | Unidade organizacional à qual Users podem pertencer e que pode ser responsável pelo atendimento de chamados. |
 
-**Importante:** User representa a identidade/conta de acesso. Colaborador e Técnico representam conceitos do domínio de Gestão de Pessoas e não são apenas valores de `Role`. O vínculo entre identidade e pessoa é explícito por meio de `userId` e `colaboradorId`. As roles permanecem em User para fins de autenticação e autorização.
+**Importante:** no contexto do Service Desk, User concentra a identidade/conta de acesso e os dados necessários para sua participação na organização. Não existe uma entidade separada de Colaborador ou Técnico. A distinção entre colaborador, técnico e administrador, quando necessária para autorização, é expressa pelas roles do User.
+
+O e-mail do User é utilizado como seu login.
 
 ## 3. Domínio do Sistema
 
 ### 3.1. Domínio Central — Gestão do Atendimento de Chamados
 
-O domínio central é responsável pelo ciclo de vida dos chamados e pelo atendimento realizado pelos Técnicos.
+O domínio central é responsável pelo ciclo de vida dos chamados e pelo atendimento realizado por Users autorizados.
 
 ### 3.2. Domínios de Suporte
 
-- **Identidade e Acesso:** autenticação, credenciais, contas de acesso e papéis de autorização dos Users.
-- **Gestão de Pessoas/Organização:** Colaboradores, Técnicos e setores.
+- **Identidade e Acesso:** autenticação, credenciais, contas de acesso e roles de autorização dos Users.
+- **Gestão de Organização:** setores e vínculo organizacional dos Users.
 - **Indicadores e relatórios:** consolidação e consulta de informações operacionais.
 
 ## 4. Atores do Sistema
 
 | Ator | Descrição |
 |---|---|
-| **Colaborador** | Pessoa da organização vinculada a um User autenticado e autorizada a abrir e acompanhar suas próprias solicitações. |
-| **Técnico** | Colaborador habilitado para atendimento e vinculado a um User autenticado com as permissões necessárias para executar operações técnicas. |
+| **User** | Pessoa cadastrada no sistema que pode utilizar as funcionalidades disponíveis de acordo com suas roles. |
+| **User com role TECHNICIAN** | User autorizado a executar operações de atendimento técnico. |
 | **Administrador** | User autenticado com a role `ADMIN`, responsável por administrar Users, setores, permissões e funcionalidades administrativas. |
 
-> **Nota:** User não é ator de negócio. User representa a identidade autenticada. Colaborador e Técnico são conceitos do domínio; as roles do User determinam as permissões de acesso às funcionalidades.
+> **Nota:** User é o conceito principal de identidade e participação no sistema. As roles determinam as permissões adicionais de acesso às funcionalidades.
 
 ## 5. Requisitos Funcionais
 
@@ -51,7 +53,7 @@ O domínio central é responsável pelo ciclo de vida dos chamados e pelo atendi
 
 **RF01 — Abrir chamado**
 
-O sistema deverá permitir que um **Colaborador** registre um chamado informando, no mínimo, título, descrição e setor responsável. A identidade do Colaborador deverá ser obtida a partir da conta (`User`) autenticada, não sendo permitido ao cliente definir livremente o solicitante.
+O sistema deverá permitir que um **User** registre um chamado informando, no mínimo, título, descrição e setor responsável. Em uma operação autenticada, a identidade do solicitante deverá ser obtida a partir do User autenticado, não sendo permitido ao cliente definir livremente outro solicitante.
 
 **RF02 — Identificar chamado**
 
@@ -59,7 +61,9 @@ O sistema deverá gerar um identificador único para cada chamado registrado.
 
 **RF03 — Registrar solicitante**
 
-O sistema deverá associar cada chamado ao **Colaborador** que realizou sua abertura, identificado no domínio como seu **Solicitante**. O atributo `Ticket.requesterId` deverá armazenar o identificador próprio do Colaborador (`Colaborador.id`), e não o identificador da conta de acesso (`User.id`). Para isso, a aplicação deverá resolver o Colaborador associado ao User autenticado por meio de `Colaborador.userId`.
+O sistema deverá associar cada chamado ao **User** que realizou sua abertura, identificado no domínio como seu **Solicitante**. O atributo `Ticket.requesterId` deverá armazenar exclusivamente o identificador do User (`User.id`).
+
+Quando a abertura do chamado ocorrer por um User autenticado, a aplicação deverá utilizar o `User.id` da identidade autenticada como solicitante.
 
 **RF04 — Definir prioridade**
 
@@ -91,19 +95,19 @@ O sistema deverá permitir a filtragem de chamados pelos seguintes critérios:
 
 **RF08 — Atribuir responsável**
 
-O sistema deverá permitir que Users autorizados atribuam um **Técnico** como responsável pelo atendimento de um chamado.
+O sistema deverá permitir que Users autorizados atribuam um **User** como responsável pelo atendimento de um chamado. A atribuição deverá respeitar as regras de autorização aplicáveis, incluindo a role `TECHNICIAN` quando exigida pela operação.
 
 **RF09 — Alterar responsável**
 
-O sistema deverá permitir a alteração do **Técnico responsável** pelo atendimento de um chamado, registrando a mudança no histórico.
+O sistema deverá permitir a alteração do User responsável pelo atendimento de um chamado, registrando a mudança no histórico.
 
 **RF10 — Iniciar atendimento**
 
-O sistema deverá permitir que um **Técnico** autorizado inicie o atendimento de um chamado pendente.
+O sistema deverá permitir que um User autorizado, de acordo com sua role, inicie o atendimento de um chamado pendente.
 
 **RF11 — Concluir chamado**
 
-O sistema deverá permitir que um **Técnico** autorizado registre a conclusão de um chamado em atendimento.
+O sistema deverá permitir que um User autorizado, de acordo com sua role, registre a conclusão de um chamado em atendimento.
 
 **RF12 — Reabrir chamado**
 
@@ -147,79 +151,59 @@ O sistema deverá calcular o tempo de solução dos chamados concluídos, consid
 
 ### 5.4. Domínio de Suporte — Identidade e Acesso
 
-**RF21 — Cadastrar conta de acesso**
+**RF21 — Cadastrar User**
 
-O sistema deverá permitir o cadastro de uma conta de acesso (`User`) com login, endereço de e-mail, senha e roles de autorização, conforme as regras do sistema.
+O sistema deverá permitir o cadastro de um User com nome, endereço de e-mail, senha e uma role de autorização, conforme as regras do sistema. O endereço de e-mail deverá ser utilizado como login e deverá ser único.
 
-**RF22 — Consultar conta de acesso**
+**RF22 — Consultar User**
 
-O sistema deverá permitir a consulta dos dados de uma conta de acesso, respeitando as permissões aplicáveis.
+O sistema deverá permitir a consulta dos dados de um User, respeitando as permissões aplicáveis.
 
-**RF23 — Atualizar conta de acesso**
+**RF23 — Atualizar User**
 
-O sistema deverá permitir a atualização dos dados cadastrais de uma conta de acesso autorizada, como login, e-mail e senha.
+O sistema deverá permitir a atualização dos dados cadastrais de um User autorizado, como nome, e-mail e senha. Alterações no e-mail deverão respeitar sua utilização como login e sua unicidade.
 
-**RF24 — Desativar conta de acesso**
+**RF24 — Desativar User**
 
-O sistema deverá permitir que um **Administrador** desative contas de acesso sem excluir seus registros históricos.
+O sistema deverá permitir que um **Administrador** desative Users sem excluir seus registros históricos.
 
 **RF25 — Autenticar User**
 
-O sistema deverá autenticar a conta de acesso (`User`) por meio de suas credenciais e disponibilizar acesso às funcionalidades conforme as roles atribuídas.
+O sistema deverá autenticar o User por meio do e-mail e senha e disponibilizar acesso às funcionalidades conforme a role atribuída.
 
-**RF26 — Gerenciar roles de acesso**
+**RF26 — Gerenciar role de acesso**
 
-O sistema deverá permitir que **Administradores** atribuam e alterem as roles de acesso de um User entre `COLLABORATOR`, `TECHNICIAN` e `ADMIN`, conforme as regras de autorização.
+O sistema deverá permitir que **Administradores** atribuam e alterem a role de um User entre `COLLABORATOR`, `TECHNICIAN` e `ADMIN`, conforme as regras de autorização.
 
 **RF27 — Consultar próprio perfil**
 
-O sistema deverá permitir que o User autenticado consulte seus próprios dados cadastrais e suas roles de acesso.
+O sistema deverá permitir que o User autenticado consulte seus próprios dados cadastrais e sua role de acesso.
 
-### 5.5. Domínio de Suporte — Gestão de Pessoas e Organização
+### 5.5. Domínio de Suporte — Gestão de Organização
 
-**RF28 — Cadastrar Colaborador**
-
-O sistema deverá permitir o cadastro de um **Colaborador**, vinculando-o a uma conta de acesso (`User`) por meio de `userId`.
-
-**RF29 — Consultar Colaborador**
-
-O sistema deverá permitir a consulta dos dados de um **Colaborador** de acordo com as permissões aplicáveis.
-
-**RF30 — Atualizar Colaborador**
-
-O sistema deverá permitir a atualização dos dados cadastrais de um **Colaborador**, preservando sua referência à conta de acesso.
-
-**RF31 — Cadastrar Técnico**
-
-O sistema deverá permitir o cadastro de um **Técnico** a partir de um Colaborador habilitado para realizar atendimento, estabelecendo a referência por meio de `colaboradorId`.
-
-**RF32 — Consultar e atualizar Técnico**
-
-O sistema deverá permitir a consulta e atualização dos dados específicos de um **Técnico**, como seu nível de atendimento, de acordo com as permissões aplicáveis.
-
-**RF33 — Cadastrar setor**
+**RF28 — Cadastrar setor**
 
 O sistema deverá permitir o cadastro de setores responsáveis pelo recebimento e atendimento de chamados.
 
-**RF34 — Consultar setores**
+**RF29 — Consultar setores**
 
 O sistema deverá permitir a consulta dos setores cadastrados.
 
-**RF35 — Atualizar e desativar setor**
+**RF30 — Atualizar e desativar setor**
 
 O sistema deverá permitir que Administradores atualizem e desativem setores, preservando os registros históricos relacionados.
 
 ### 5.6. Domínio de Suporte — Indicadores e Relatórios
 
-**RF36 — Consultar indicadores de chamados**
+**RF31 — Consultar indicadores de chamados**
 
 O sistema deverá disponibilizar indicadores quantitativos de chamados, permitindo sua análise por status, prioridade e setor.
 
-**RF37 — Consultar indicadores por Técnico**
+**RF32 — Consultar indicadores por User responsável**
 
-O sistema deverá permitir a consulta de indicadores relacionados aos **Técnicos** responsáveis pelo atendimento.
+O sistema deverá permitir a consulta de indicadores relacionados aos Users responsáveis pelo atendimento.
 
-**RF38 — Consultar tempo médio de solução**
+**RF33 — Consultar tempo médio de solução**
 
 O sistema deverá disponibilizar o tempo médio de solução dos chamados concluídos, conforme os filtros e critérios definidos.
 
@@ -227,47 +211,57 @@ O sistema deverá disponibilizar o tempo médio de solução dos chamados conclu
 
 **RG01 — Autenticação e autorização**
 
-As funcionalidades deverão ser acessíveis somente após autenticação, respeitando as roles e permissões do User autenticado.
+As funcionalidades protegidas deverão ser acessíveis somente após autenticação, respeitando a role do User autenticado.
 
-**RG02 — Separação entre identidade, autorização e domínio**
+**RG02 — Separação entre identidade e autorização**
 
-User representa a identidade/conta de acesso e suas roles de autorização. Colaborador e Técnico representam entidades do domínio de Gestão de Pessoas e possuem referências explícitas à identidade por meio de `userId` e `colaboradorId`.
+User representa a pessoa/conta utilizada no sistema. Role representa sua autorização. Role não deve ser utilizada como substituta de uma entidade de domínio inexistente.
 
-**RG03 — Integridade do ciclo de vida**
+**RG03 — Identidade do solicitante**
+
+O `Ticket.requesterId` deverá referenciar exclusivamente `User.id`. Em operações autenticadas, o solicitante deverá ser derivado da identidade autenticada no backend.
+
+**RG04 — Identidade do responsável**
+
+O `Ticket.assigneeId`, quando informado, deverá referenciar exclusivamente `User.id`. A aplicação deverá validar se o User possui a role necessária para assumir a responsabilidade pelo chamado.
+
+**RG05 — Integridade do ciclo de vida**
 
 As mudanças de status do chamado deverão respeitar as transições permitidas pelo ciclo de vida definido pelo domínio.
 
-**RG04 — Histórico**
+**RG06 — Histórico**
 
 Alterações relevantes do chamado deverão ser registradas para preservar a rastreabilidade do atendimento.
 
-**RG05 — Preservação histórica**
+**RG07 — Preservação histórica**
 
-A desativação de uma conta de acesso ou de um setor não deverá apagar os registros históricos de chamados e atendimentos relacionados.
+A desativação de um User ou de um setor não deverá apagar os registros históricos de chamados e atendimentos relacionados.
 
-**RG06 — Controle temporal**
+**RG08 — Controle temporal**
 
 As datas de abertura, início do atendimento, conclusão e demais eventos relevantes deverão ser registradas de forma consistente e permitir o cálculo do tempo de solução.
 
-**RG07 — Consistência entre identidade e pessoa**
+**RG09 — Setor do User e setor do Ticket**
 
-Um Colaborador deverá possuir uma referência válida para um User. Um Técnico deverá possuir uma referência válida para um Colaborador. A existência de um User não implica, por si só, a existência de um Colaborador ou Técnico.
+O setor ao qual um User pertence (`User.sectorId`) representa seu vínculo organizacional e não determina necessariamente o setor responsável pelo atendimento de um Ticket (`Ticket.sectorId`).
 
-**RG08 — Identificação do solicitante**
+**RG10 — Role única**
 
-O `requesterId` de um Ticket deverá referenciar exclusivamente `Colaborador.id`. Quando a abertura do chamado ocorrer por um User autenticado, a aplicação deverá localizar o Colaborador associado por `userId` e utilizar seu identificador como solicitante. O identificador do solicitante não deverá ser aceito como dado livremente definido pelo cliente em operações autenticadas.
+Cada User possui uma única role de autorização. A role determina o conjunto de permissões aplicável ao User.
 
 ## 7. Considerações sobre evolução
 
 1. As regras de autenticação e autorização deverão ser aplicadas no backend, independentemente das restrições existentes na interface.
 2. As regras de negócio do atendimento deverão permanecer independentes da infraestrutura de autenticação e persistência.
-3. O domínio deverá expressar explicitamente as responsabilidades de **Colaborador** e **Técnico**, evitando o uso de `User` como substituto desses conceitos.
-4. O `Ticket.requesterId` deverá referenciar `Colaborador.id`; a identidade autenticada (`User.id`) deverá ser utilizada apenas para localizar o Colaborador associado por `userId`.
-5. O identificador do solicitante deverá ser derivado da identidade autenticada no backend, evitando confiar em um `requesterId` arbitrário enviado pelo cliente.
-6. As roles de `User` deverão permanecer relacionadas à autorização de acesso, não sendo utilizadas como substitutas das entidades de domínio **Colaborador** e **Técnico**.
-7. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento, regras de horário comercial, dias úteis e feriados.
-8. Os requisitos poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
+3. User concentra, no contexto do Service Desk, a identidade de acesso e os dados necessários para sua participação na organização.
+4. `Ticket.requesterId` e `Ticket.assigneeId` deverão referenciar `User.id`.
+5. O identificador do solicitante deverá ser derivado da identidade autenticada no backend, evitando confiar em um `requesterId` arbitrário enviado pelo cliente em operações autenticadas.
+6. A role `TECHNICIAN` representa autorização para executar operações técnicas; não é necessário modelar uma entidade Técnico enquanto não houver atributos ou comportamentos de domínio próprios que justifiquem essa entidade.
+7. A role `ADMIN` representa autorização administrativa e não é uma entidade de domínio.
+8. O e-mail do User é utilizado como login e deve permanecer único.
+9. Os cálculos de tempo de solução deverão considerar os períodos efetivos de atendimento, regras de horário comercial, dias úteis e feriados.
+10. Os requisitos poderão ser refinados durante o desenvolvimento, desde que as alterações sejam documentadas e mantenham a rastreabilidade das decisões.
 
 ___
 
-#### *v2.4.0*
+#### *v2.5.0*
